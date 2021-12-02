@@ -3,14 +3,13 @@ package ex2;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.concurrent.LinkedBlockingDeque;
 
 public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGraphAlgorithms {
     private DirectedWeightedGraphClass dwgraph;
     @Override
     public void init(DirectedWeightedGraph g) {
         DirectedWeightedGraphClass thecoolerg= (DirectedWeightedGraphClass)g;
-        dwgraph=new DirectedWeightedGraphClass(thecoolerg.getNodeList(), thecoolerg.getEdgelist(), g.getMC());
+        dwgraph=new DirectedWeightedGraphClass(thecoolerg.getNodelist(), thecoolerg.getEdgelist(), g.getMC());
     }
 
     @Override
@@ -20,7 +19,7 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
 
     @Override
     public DirectedWeightedGraph copy() {
-        return new DirectedWeightedGraphClass(dwgraph.getNodeList(), dwgraph.getEdgelist(), dwgraph.getMC());
+        return new DirectedWeightedGraphClass(dwgraph.getNodelist(), dwgraph.getEdgelist(), dwgraph.getMC());
     }
     public boolean Areconnected(Node a, Node b){
         Queue<Node> q= new LinkedList<>();

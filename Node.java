@@ -1,29 +1,62 @@
 package ex2;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Node implements NodeData {
     private int key;
     private int tag;
+    private List<Integer> connected;//Keeps track of all the nodes that are connected to this one.
     private GeoLocation location;
     private double weight;
     private String info;
-    private HashMap<Integer, EdgeData> edgelist;
+    private HashMap<Integer, EdgeData> outedgelist;
+    private HashMap<Integer, EdgeData> inedgelist;
     public Node(int key, int tag, GeoLocation location, String info){
         this.key=key;
         this.tag=tag;
         setLocation(location);
         this.info=info;
-        this.edgelist=new HashMap<>();
+        this.outedgelist= new HashMap<>();
+        this.inedgelist= new HashMap<>();
+        connected= new LinkedList<>();
     }
-    public void AddEdge(int dest, EdgeData edge){
-        edgelist.put(dest, edge);
+    public void AddOutEdge(int dest, EdgeData edge){
+        outedgelist.put(dest, edge);
+        connected.add(dest);
     }
-    public boolean isconnected(int dest){
-        return edgelist.containsKey(dest);
+    public void AddInEdge(int src, EdgeData edge){
+        inedgelist.put(src, edge);
+        connected.add(src);
     }
-    public EdgeData GetEdge(int dest){
-        return edgelist.get(dest);
+    public EdgeData RemoveOutEdge(int dest){
+        EdgeData temp= outedgelist.remove(dest);
+        return temp;
+    }
+    public EdgeData RemoveInEdge(int src){
+        EdgeData temp= inedgelist.remove(src);
+        return temp;
+    }
+
+    public List<Integer> getConnected() {
+        return connected;
+    }
+
+    public boolean isconnected(int other){
+        return outedgelist.containsKey(other) || inedgelist.containsKey(other);
+    }
+    public EdgeData GetOutEdge(int dest){
+        return outedgelist.get(dest);
+    }
+    public EdgeData GetInEdge(int src){
+        return inedgelist.get(src);
+    }
+    public HashMap<Integer,EdgeData> GetOutEdgeList(){
+        return outedgelist;
+    }
+    public HashMap<Integer,EdgeData> GetInEdgeList(){
+        return inedgelist;
     }
     @Override
     public int getKey() {

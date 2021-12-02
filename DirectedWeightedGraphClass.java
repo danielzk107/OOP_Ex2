@@ -1,29 +1,26 @@
 package ex2;
 
-import org.w3c.dom.NodeList;
-
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 
 public class DirectedWeightedGraphClass implements DirectedWeightedGraph {
     private HashMap<Integer,NodeData> nodeList;
     private HashMap<Integer, EdgeData> edgelist;
-    private int modecounter;
+    private int modcounter;
     public DirectedWeightedGraphClass() {
         this.nodeList = new HashMap<>();
         this.edgelist = new HashMap<>();
-        this.modecounter = 0;
+        this.modcounter = 0;
     }
     public DirectedWeightedGraphClass(HashMap<Integer,NodeData> nodeList, HashMap<Integer,EdgeData> edgelist, int modecounter) {
         this.nodeList = nodeList;
         this.edgelist = edgelist;
-        this.modecounter = modecounter;
+        this.modcounter = modecounter;
     }
-    public void setNodeList(HashMap<Integer, NodeData> nodeList) {
+    public void setNodelist(HashMap<Integer, NodeData> nodeList) {
         this.nodeList = nodeList;
     }
-    public HashMap<Integer, NodeData> getNodeList() {
+    public HashMap<Integer, NodeData> getNodelist() {
         return nodeList;
     }
     public void setEdgelist(HashMap<Integer, EdgeData> edgelist) {
@@ -40,7 +37,7 @@ public class DirectedWeightedGraphClass implements DirectedWeightedGraph {
     @Override
     public EdgeData getEdge(int src, int dest) {
         Node temp= (Node)nodeList.get(src);
-        return temp.GetEdge(dest);
+        return temp.GetOutEdge(dest);
     }
 
     @Override
@@ -52,23 +49,42 @@ public class DirectedWeightedGraphClass implements DirectedWeightedGraph {
     public void connect(int src, int dest, double w) {
         Node srcnode = (Node)nodeList.get(src);
         Node destnode= (Node)nodeList.get(dest);
-        EdgeDataClass temp= new EdgeDataClass(srcnode, destnode, w, "", 0);
-        srcnode.AddEdge(dest,temp);
+        EdgeDataClass temp= new EdgeDataClass(edgelist.size()+1,srcnode, destnode, w, "", 0);
+        edgelist.put(temp.getId(), temp);
+        srcnode.AddOutEdge(dest, temp);
+        destnode.AddInEdge(src, temp);
     }
 
     @Override
     public Iterator<NodeData> nodeIter() {
-        return null;
+        Iterator<NodeData> iterator= new NodelistIterator(0, this);
+        return iterator;
     }
 
     @Override
     public Iterator<EdgeData> edgeIter() {
-        return null;
+        Iterator<EdgeData> iterator= new EdgelistIterator(0, this);
+        return iterator;
     }
 
     @Override
     public Iterator<EdgeData> edgeIter(int node_id) {
-        return null;
+        Node temp= (Node)getNode(node_id);
+        HashMap<Integer, EdgeData> list= new HashMap<>();
+        HashMap<Integer, EdgeData> intemp= temp.GetInEdgeList();
+        HashMap<Integer, EdgeData> outtemp= temp.GetOutEdgeList();
+        EdgeDataClass edge;
+        for(int i:temp.getConnected()){
+            if(intemp.containsKey(i)){
+                edge= (EdgeDataClass)intemp.remove(i);
+            }
+            else{
+                edge= (EdgeDataClass)outtemp.remove(i);
+            }
+            list.put(edge.getId(), edge);
+        }
+        Iterator<EdgeData> iterator= new EdgelistIterator(0,this,list);
+        return iterator;
     }
 
     @Override
@@ -79,9 +95,10 @@ public class DirectedWeightedGraphClass implements DirectedWeightedGraph {
 
     @Override
     public EdgeData removeEdge(int src, int dest) {
-        Node srcnode = (Node)nodeList.get(src);
-        EdgeData temp = srcnode.GetEdge(dest);
-        return temp;
+        Node srcnode= (Node)nodeList.get(src);
+        Node destnode= (Node)nodeList.get(dest);
+        destnode.RemoveInEdge(src);
+        return srcnode.RemoveOutEdge(dest);
     }
 
     @Override
@@ -96,6 +113,6 @@ public class DirectedWeightedGraphClass implements DirectedWeightedGraph {
 
     @Override
     public int getMC() {
-        return modecounter;
+        return modcounter;
     }
 }
