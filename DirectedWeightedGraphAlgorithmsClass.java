@@ -33,6 +33,33 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
 
     @Override
     public double shortestPathDist(int src, int dest) {
+           if(src==dest) return 0;
+        int NS= dwgraph.nodeSize();
+        boolean [] vis= new boolean[NS];
+        for (int i=0 ; i<NS ; i++){
+            vis[i]=false;
+        }
+        double [] dist=new double[NS];
+        Arrays.fill(dist,Double.POSITIVE_INFINITY);
+        dist[src]=0.0;
+
+        PriorityQueue<NodeData> q = new PriorityQueue<>();
+        q.add(dwgraph.getNode(src));
+        dist[src]=0.0;
+        dwgraph.getNode(src).setWeight(0.0);
+
+        while (!q.isEmpty()){
+            Node node = (Node)q.poll();
+            int nodeKey = q.peek().getKey();
+            vis[nodeKey]=true;
+
+            if (dist[nodeKey] < node.getWeight()) continue;
+            for (EdgeData i : dwgraph.getEdgelist().values()){
+
+            }
+
+
+        }
         return 0;
     }
 
