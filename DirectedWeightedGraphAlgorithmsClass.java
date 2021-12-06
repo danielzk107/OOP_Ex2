@@ -33,34 +33,35 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
 
     @Override
     public double shortestPathDist(int src, int dest) {
-           if(src==dest) return 0;
-        int NS= dwgraph.nodeSize();
-        boolean [] vis= new boolean[NS];
-        for (int i=0 ; i<NS ; i++){
-            vis[i]=false;
+              if(src==dest) return 0;
+        //reset all the node wegiht to infinite
+        for (NodeData i:dwgraph.getNodelist().values()){
+            i.setWeight(Double.POSITIVE_INFINITY);
         }
-        double [] dist=new double[NS];
-        Arrays.fill(dist,Double.POSITIVE_INFINITY);
-        dist[src]=0.0;
 
-        PriorityQueue<NodeData> q = new PriorityQueue<>();
-        q.add(dwgraph.getNode(src));
-        dist[src]=0.0;
+        Queue<NodeData> q = new LinkedList<>();
+        q.add(dwgraph.getNode(src));//add src in the queue
         dwgraph.getNode(src).setWeight(0.0);
 
         while (!q.isEmpty()){
-            Node node = (Node)q.poll();
-            int nodeKey = q.peek().getKey();
-            vis[nodeKey]=true;
-
-            if (dist[nodeKey] < node.getWeight()) continue;
-            for (EdgeData i : dwgraph.getEdgelist().values()){
-
+            Node node = (Node) q.poll();
+            q.remove(node);//visited
+            
+            for (Integer i :node.getConnected()){
+                //if w(src)+w(edge(src,neighbor))< w(neighbor)
+                double weight=(node.getWeight()+dwgraph.getEdge(node.getKey(),i).getWeight());
+                if ( weight < dwgraph.getNode(i).getWeight()){
+                    if (i!=dest){
+                        q.add(dwgraph.getNode(i));
+                    }
+                    dwgraph.getNode(i).setWeight(weight);
+                }
             }
-
-
+            if(dwgraph.getNode(dest).getWeight()<Double.POSITIVE_INFINITY){// if you get to the dest node return his weight
+                return dwgraph.getNode(dest).getWeight();
+            }
         }
-        return 0;
+        return -1;
     }
 
     @Override
