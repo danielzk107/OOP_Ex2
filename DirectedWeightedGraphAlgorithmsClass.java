@@ -57,9 +57,9 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
                     dwgraph.getNode(i).setWeight(weight);
                 }
             }
-            if(dwgraph.getNode(dest).getWeight()<Double.POSITIVE_INFINITY){// if you get to the dest node return his weight
+        }
+        if(dwgraph.getNode(dest).getWeight()<Double.POSITIVE_INFINITY){// if you get to the dest node return his weight
                 return dwgraph.getNode(dest).getWeight();
-            }
         }
         return -1;
     }
