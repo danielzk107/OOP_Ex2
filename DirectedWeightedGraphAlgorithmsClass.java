@@ -1,7 +1,10 @@
 package ex2;
 
-import java.security.KeyPair;
+import java.io.*;
 import java.util.*;
+import org.json.*;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
 
 public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGraphAlgorithms {
     private DirectedWeightedGraphClass dwgraph;
@@ -117,7 +120,34 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
 
     @Override
     public NodeData center() {
-        return null;
+        if(!isConnected()){
+            return null;
+        }
+        int[] numberofapereances= new int[dwgraph.nodeSize()];
+        int[] minarr= new int[dwgraph.nodeSize()];//keeps the node that is closest(shortest path) to the node represented by minarr[i]
+        for(int i=0; i< dwgraph.nodeSize();i++){
+            double[] distance=new double[dwgraph.nodeSize()];//keeps the distance between the node i and the node distance[j]
+            minarr[i]=0;//placeholder that would change shortly(unless it fits the requirements)
+            for(int j=0; j< dwgraph.nodeSize();j++){
+                distance[j]=shortestPathDist(i,j);
+            }
+            for(int j=0; j< dwgraph.nodeSize();j++){
+                if(i!=j){
+                    if(distance[minarr[i]]>distance[j]){
+                        numberofapereances[j]++;
+                        numberofapereances[minarr[i]]--;
+                        minarr[i]=j;
+                    }
+                }
+            }
+        }
+        int max=0, maxnum=Integer.MIN_VALUE;
+        for(int i=0; i< dwgraph.nodeSize();i++){
+            if(numberofapereances[i]>maxnum){
+                max=i;
+            }
+        }
+        return dwgraph.getNode(max);
     }
 
     @Override
@@ -179,7 +209,6 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
              try {
             FileOutputStream f = new FileOutputStream(file);
             ObjectOutputStream o = new ObjectOutputStream(f);
-
             o.writeObject(this.dwgraph);
             f.close();
             o.close();
@@ -195,6 +224,15 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
 
     @Override
     public boolean load(String file) {
-        return false;
+        JSONParser parser= new JSONParser();
+        try{
+            JSONArray arr= (JSONArray)parser.parse(new FileReader(file));
+
+        }
+        catch (Exception e){
+            System.out.println("File not Found");
+            return false;
+        }
+        return true;
     }
 }
