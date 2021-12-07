@@ -77,10 +77,42 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         }
         return -1;
     }
+    
+    //helper function
+    private List<NodeData> helper(int src, int dest) {
+        List<NodeData> ans= new LinkedList<>();
+        for (NodeData i:dwgraph.getNodelist().values()){
+            i.setWeight(Double.POSITIVE_INFINITY);
+        }
+
+        Queue<NodeData> q = new LinkedList<>();
+        q.add(dwgraph.getNode(src));//add src in the queue
+        dwgraph.getNode(src).setWeight(0.0);
+
+        while (!q.isEmpty()){
+            Node node = (Node) q.poll();
+            q.remove(node);//visited
+            for (Integer i :node.getConnected()){
+                //if w(src)+w(edge(src,neighbor))< w(neighbor)
+                double weight=(node.getWeight()+dwgraph.getEdge(node.getKey(),i).getWeight());
+                if ( weight < dwgraph.getNode(i).getWeight()){
+                    if (i!=dest){
+                        q.add(dwgraph.getNode(i));
+                    }
+                    dwgraph.getNode(i).setWeight(weight);
+                    ans.add(dwgraph.getNode(i)); //add to the list of shortestpath map
+                }
+
+            }
+        }
+        return ans;
+    }
 
     @Override
     public List<NodeData> shortestPath(int src, int dest) {
-        return null;
+        List<NodeData> ans;
+        ans=helper(src,dest);
+        return ans;
     }
 
     @Override
@@ -144,7 +176,21 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
 
     @Override
     public boolean save(String file) {
-        return false;
+             try {
+            FileOutputStream f = new FileOutputStream(file);
+            ObjectOutputStream o = new ObjectOutputStream(f);
+
+            o.writeObject(this.dwgraph);
+            f.close();
+            o.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     @Override
