@@ -49,7 +49,7 @@ public class AlgorithmsTests {
     }
     @Test
     void LoadTest(){
-        boolean actual= dwgalgo.load("G1.json");
+        boolean actual= dwgalgo.load("resources/G1.json");
         assertEquals(true,actual );
     }
 
