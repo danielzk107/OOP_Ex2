@@ -21,16 +21,18 @@ public class EdgelistIterator implements Iterator {
         this.list= list;
     }
     public boolean Isoutdated(){
-        if(graph.getMC()!=modcount){
-            Exception e= new RuntimeException("This Iterator is outdated");
-            try {
-                throw e;
-            } catch (Exception exception) {
-                exception.printStackTrace();
+        try {
+            if(graph.getMC()!=modcount){
+                throw new RuntimeException("This Iterator is outdated");
             }
-            return false;
+        } catch (Exception e){
+            e.printStackTrace();
         }
         return true;
+    }
+    public boolean isEmpty(){
+        Isoutdated();
+        return list.isEmpty();
     }
     @Override
     public boolean hasNext() {
@@ -49,5 +51,6 @@ public class EdgelistIterator implements Iterator {
     public void remove() {
         Isoutdated();
         list.remove(current-1);
+        current++;
     }
 }

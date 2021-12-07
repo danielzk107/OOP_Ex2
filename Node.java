@@ -31,25 +31,54 @@ public class Node implements NodeData {
         connected.add(src);
     }
     public EdgeData RemoveOutEdge(int dest){
-        EdgeData temp= outedgelist.remove(dest);
-        return temp;
+        if(!inedgelist.containsKey(dest)){
+            connected.remove(dest);
+        }
+        return outedgelist.remove(dest);
     }
     public EdgeData RemoveInEdge(int src){
-        EdgeData temp= inedgelist.remove(src);
-        return temp;
+        if(!outedgelist.containsKey(src)){
+            connected.remove(src);
+        }
+        return inedgelist.remove(src);
     }
-
+    public boolean RemoveEdge(int other){
+        connected.remove(other);
+        boolean condition= false;
+        if(inedgelist.containsKey(other)){
+            inedgelist.remove(other);
+            condition= true;
+        }
+        if(outedgelist.containsKey(other)){
+            outedgelist.remove(other);
+            condition=true;
+        }
+        return condition;
+    }
     public List<Integer> getConnected() {
         return connected;
     }
 
-    public boolean isconnected(int other){
-        return outedgelist.containsKey(other) || inedgelist.containsKey(other);
+    public int isconnected(int other){//returns 0 if not connected, 1 if connected in one way, and 2 if connected in two ways
+        int ans = 0;
+        if(inedgelist.containsKey(other)){
+            ans++;
+        }
+        if(outedgelist.containsKey(other)){
+            ans++;
+        }
+        return ans;
     }
     public EdgeData GetOutEdge(int dest){
+        if(!outedgelist.containsKey(dest)){
+            return null;
+        }
         return outedgelist.get(dest);
     }
     public EdgeData GetInEdge(int src){
+        if(!inedgelist.containsKey(src)){
+            return null;
+        }
         return inedgelist.get(src);
     }
     public HashMap<Integer,EdgeData> GetOutEdgeList(){
@@ -70,27 +99,7 @@ public class Node implements NodeData {
 
     @Override
     public void setLocation(GeoLocation p) {
-        this.location= new GeoLocation() {
-            @Override
-            public double x() {
-                return p.x();
-            }
-
-            @Override
-            public double y() {
-                return p.y();
-            }
-
-            @Override
-            public double z() {
-                return p.z();
-            }
-
-            @Override
-            public double distance(GeoLocation g) {
-                return Math.sqrt(Math.pow((p.x()-g.x()),2)+Math.pow((p.y()-g.y()), 2)+Math.pow((p.z()-g.z()),2));
-            }
-        };
+        this.location= new GeoLocationClass(p.x(),p.y(),p.z());
     }
 
     @Override

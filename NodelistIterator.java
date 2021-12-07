@@ -12,16 +12,18 @@ public class NodelistIterator implements Iterator {
         modcount= graph.getMC();
     }
     public boolean Isoutdated(){
-        if(graph.getMC()!=modcount){
-            Exception e= new RuntimeException("This Iterator is outdated");
-            try {
-                throw e;
-            } catch (Exception exception) {
-                exception.printStackTrace();
+        try {
+            if(graph.getMC()!=modcount){
+                throw new RuntimeException("This Iterator is outdated");
             }
-            return false;
+        } catch (Exception e){
+            e.printStackTrace();
         }
         return true;
+    }
+    public boolean isEmpty(){
+        Isoutdated();
+        return graph.getNodelist().isEmpty();
     }
     @Override
     public boolean hasNext() {
@@ -39,6 +41,7 @@ public class NodelistIterator implements Iterator {
     @Override
     public void remove() {
         Isoutdated();
-        graph.getNodelist().remove(current-1);
+        graph.removeNode(current);
+        current++;
     }
 }

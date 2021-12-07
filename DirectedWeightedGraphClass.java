@@ -5,7 +5,7 @@ import java.util.Iterator;
 
 public class DirectedWeightedGraphClass implements DirectedWeightedGraph {
     private HashMap<Integer,NodeData> nodeList;
-    private HashMap<Integer, EdgeData> edgelist;
+    private HashMap<Integer,EdgeData> edgelist;
     private int modcounter;
     public DirectedWeightedGraphClass() {
         this.nodeList = new HashMap<>();
@@ -19,12 +19,14 @@ public class DirectedWeightedGraphClass implements DirectedWeightedGraph {
     }
     public void setNodelist(HashMap<Integer, NodeData> nodeList) {
         this.nodeList = nodeList;
+        modcounter++;
     }
     public HashMap<Integer, NodeData> getNodelist() {
         return nodeList;
     }
     public void setEdgelist(HashMap<Integer, EdgeData> edgelist) {
         this.edgelist = edgelist;
+        modcounter++;
     }
     public HashMap<Integer, EdgeData> getEdgelist() {
         return edgelist;
@@ -43,6 +45,7 @@ public class DirectedWeightedGraphClass implements DirectedWeightedGraph {
     @Override
     public void addNode(NodeData n) {
         nodeList.put(n.getKey(), n);
+        modcounter++;
     }
 
     @Override
@@ -53,6 +56,7 @@ public class DirectedWeightedGraphClass implements DirectedWeightedGraph {
         edgelist.put(temp.getId(), temp);
         srcnode.AddOutEdge(dest, temp);
         destnode.AddInEdge(src, temp);
+        modcounter++;
     }
 
     @Override
@@ -89,8 +93,17 @@ public class DirectedWeightedGraphClass implements DirectedWeightedGraph {
 
     @Override
     public NodeData removeNode(int key) {
-        Node temp= (Node)nodeList.remove(key);
-        return temp;
+        Node removed= (Node)nodeList.remove(key);
+        EdgelistIterator iterator = (EdgelistIterator)edgeIter(key);
+        for(int i: removed.getConnected()){
+            Node temp = (Node)nodeList.get(i);
+            temp.RemoveEdge(removed.getKey());
+        }
+        while(!iterator.isEmpty()){
+            iterator.remove();
+        }
+        modcounter++;
+        return removed;
     }
 
     @Override
@@ -98,6 +111,7 @@ public class DirectedWeightedGraphClass implements DirectedWeightedGraph {
         Node srcnode= (Node)nodeList.get(src);
         Node destnode= (Node)nodeList.get(dest);
         destnode.RemoveInEdge(src);
+        modcounter++;
         return srcnode.RemoveOutEdge(dest);
     }
 
