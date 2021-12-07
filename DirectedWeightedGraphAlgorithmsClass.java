@@ -2,14 +2,17 @@ package ex2;
 
 import java.io.*;
 import java.util.*;
-import org.json.*;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGraphAlgorithms {
     private DirectedWeightedGraphClass dwgraph;
     public DirectedWeightedGraphAlgorithmsClass(DirectedWeightedGraphClass g){
         this.dwgraph=g;
+    }
+    public DirectedWeightedGraphAlgorithmsClass(){
+        this.dwgraph=null;
     }
     @Override
     public void init(DirectedWeightedGraph g) {
@@ -186,21 +189,7 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
                 }
             }
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        //UNFINISHED
         return null;
     }
 
@@ -225,12 +214,50 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
     @Override
     public boolean load(String file) {
         JSONParser parser= new JSONParser();
+        boolean problem=false;
         try{
-            JSONArray arr= (JSONArray)parser.parse(new FileReader(file));
-
+            System.out.println("A");
+            FileReader read= new FileReader(file);
+            JSONObject arr= (JSONObject)parser.parse(read);
+            JSONArray edges= (JSONArray)arr.get("Edges");
+            JSONArray nodes= (JSONArray)arr.get("Nodes");
+            HashMap<Integer,NodeData> nodelist= new HashMap<>();
+            HashMap<Integer, EdgeData> edgelist= new HashMap<>();
+            for (Object o: nodes){
+                JSONObject newnode= (JSONObject)o;
+                int id = (int)newnode.get("id");
+                String position= (String)newnode.get("pos");
+                String[] posarr= position.split(",");
+                nodelist.put(id, new Node(id, 0, new GeoLocationClass(Double.parseDouble(posarr[0]),Double.parseDouble(posarr[1]),Double.parseDouble(posarr[2])),""));
+            }
+            int edgecounter=0;
+            for(Object o: edges){
+                JSONObject newedge= (JSONObject)o;
+                int src= (int)newedge.get("src");
+                int dest= (int)newedge.get("dest");
+                double weight= (double)newedge.get("w");
+                Node srcnode=(Node)nodelist.get(src);
+                Node destnode= (Node)nodelist.get(dest);
+                if(srcnode==null || destnode==null){
+                    System.out.println("One of the given edges uses a non-existing node");
+                    problem=true;
+                    break;
+                }
+                EdgeDataClass edge= new EdgeDataClass(edgecounter, srcnode, destnode, weight, "", 0);
+                srcnode.AddOutEdge(dest,edge);
+                destnode.AddInEdge(src, edge);
+                edgelist.put(edgecounter, edge);
+            }
+            if(problem){
+                System.out.println("The program has not initiated a new graph because it was given a faulty one.");
+            }
+            else{
+                init(new DirectedWeightedGraphClass(nodelist,edgelist,0));
+            }
         }
         catch (Exception e){
-            System.out.println("File not Found");
+            System.err.println("File not Found");
+            e.printStackTrace();
             return false;
         }
         return true;

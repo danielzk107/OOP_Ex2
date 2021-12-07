@@ -7,6 +7,7 @@ import java.util.Random;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class AlgorithmsTests {
+    DirectedWeightedGraphAlgorithmsClass dwgalgo= new DirectedWeightedGraphAlgorithmsClass();
     public DirectedWeightedGraphClass DWGraphMaker(int size, int numofedges){
         HashMap<Integer, NodeData> nodelist= new HashMap<>();
         HashMap<Integer, EdgeData> edgelist= new HashMap<>();
@@ -43,8 +44,13 @@ public class AlgorithmsTests {
     }
     @Test
     void IsCompleteTest(){
-        DirectedWeightedGraphAlgorithmsClass dwgalgo= new DirectedWeightedGraphAlgorithmsClass(DWGraphMaker(10,90));
+        dwgalgo.init(DWGraphMaker(10,90));
         assertEquals(dwgalgo.isConnected(), true);
+    }
+    @Test
+    void LoadTest(){
+        boolean actual= dwgalgo.load("G1.json");
+        assertEquals(true,actual );
     }
 
 
