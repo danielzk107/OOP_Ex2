@@ -195,21 +195,26 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
 
     @Override
     public boolean save(String file) {
-             try {
-            FileOutputStream f = new FileOutputStream(file);
-            ObjectOutputStream o = new ObjectOutputStream(f);
-            o.writeObject(this.dwgraph);
-            f.close();
-            o.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return false;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
+    JSONArray object= new JSONArray();
+    object.add(this.dwgraph);
+        
+   try {
+        FileWriter fw = new FileWriter(file);
+        fw.write(object.toJSONString());
+        fw.close();
+    } catch (FileNotFoundException e){
+        System.err.println("File not Found");
+        e.printStackTrace();
+        return false;
+   } catch (Exception e){
+        e.printStackTrace();
+        return false;
+   }
+        
+    return true;
+    
+  }
+  
 
     @Override
     public boolean load(String file) {
