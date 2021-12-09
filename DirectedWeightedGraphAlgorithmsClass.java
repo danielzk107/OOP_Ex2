@@ -61,28 +61,54 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         for (NodeData i:dwgraph.getNodelist().values()){
             i.setWeight(Double.POSITIVE_INFINITY/2);//setting it to (max number)/2 so when we add it to itself it doesnt turn into a negative number
         }
-        Queue<NodeData> q = new LinkedList<>();
-        q.add(dwgraph.getNode(src));//add src in the queue
         dwgraph.getNode(src).setWeight(0.0);
-        while (!q.isEmpty()){
-            Node node = (Node) q.poll();
-            q.remove(node);//visited
-            for (Integer i :node.getConnected()){
-                //if w(src)+w(edge(src,neighbor))< w(neighbor)
-                double weight=(node.getWeight()+dwgraph.getEdge(node.getKey(),i).getWeight());
-                if ( weight < dwgraph.getNode(i).getWeight()){
-                    if (i!=dest){
-                        q.add(dwgraph.getNode(i));
-                    }
-                    dwgraph.getNode(i).setWeight(weight);
+
+        HashSet<NodeData> settled= new HashSet<>();
+        HashSet<NodeData> unsettled= new HashSet<>();
+
+        unsettled.add(dwgraph.getNode(src));
+        while (unsettled.size()!=0){
+            Node curr= getLow(unsettled);
+            unsettled.remove(curr);
+            for (Integer i : curr.getConnected()) {
+                Node adj= (Node) dwgraph.getNode(i);
+                double edgeweight= dwgraph.getEdge(curr.getKey(),i).getWeight();
+                if(!settled.contains(adj)){
+                  calculatMinCost(adj,edgeweight,curr);
+                  unsettled.add(adj);
                 }
             }
+            settled.add(curr);
         }
-        if(dwgraph.getNode(dest).getWeight()<Double.POSITIVE_INFINITY){// if you get to the dest node return his weight
-                return dwgraph.getNode(dest).getWeight();
+        if (dwgraph.getNode(dest).getWeight() < Double.POSITIVE_INFINITY) {// if you get to the dest node return his weight
+            return dwgraph.getNode(dest).getWeight();
         }
         return -1;
     }
+    
+    private Node getLow(HashSet<NodeData> unsettled) {
+        NodeData low=null;
+        double lowestWeight= Integer.MAX_VALUE;
+        for (NodeData n: unsettled) {
+            double nodeW= n.getWeight();
+            if (nodeW<lowestWeight){
+                lowestWeight= nodeW;
+                low= n;
+            }
+        }
+        return (Node) low;
+    }
+    
+      private void calculatMinCost(Node adj, double edgeweight, Node curr) {
+        double srcW = curr.getWeight();
+        if (srcW + edgeweight < adj.getWeight()) {
+            adj.setWeight(srcW+edgeweight);
+            LinkedList<NodeData> shortestPath= new LinkedList<>(curr.getShortestPath());
+            shortestPath.add(curr);
+            adj.setShortestPath(shortestPath);
+        }
+    }
+    
     
     //helper function
     private List<NodeData> helper(int src, int dest) {
