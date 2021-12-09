@@ -220,6 +220,7 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
     public boolean load(String file) {
         JSONParser parser= new JSONParser();
         boolean problem=false;
+        String problemdescription="One of the given nodes has some data in a wrong format.";
         try{
             FileReader read= new FileReader(file);
             JSONObject arr= (JSONObject)parser.parse(read);
@@ -243,7 +244,7 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
                 Node srcnode=(Node)nodelist.get(src);
                 Node destnode= (Node)nodelist.get(dest);
                 if(srcnode==null || destnode==null){
-                    System.out.println("One of the given edges uses a non-existing node");
+                    problemdescription="One of the given edges uses a non-existing node.";
                     problem=true;
                     break;
                 }
@@ -251,9 +252,10 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
                 srcnode.AddOutEdge(dest,edge);
                 destnode.AddInEdge(src, edge);
                 edgelist.put(edgecounter, edge);
+                edgecounter++;
             }
             if(problem){
-                System.out.println("The program has not initiated a new graph because it was given a faulty one.");
+                throw new Exception(problemdescription);
             }
             else{
                 init(new DirectedWeightedGraphClass(nodelist,edgelist,0));
@@ -261,10 +263,10 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         }
         catch (FileNotFoundException e){
             System.err.println("File not Found");
-            e.printStackTrace();
             return false;
         }
         catch (Exception e){
+            System.err.println("File Found but has incorrect/inconsistent data:");
             e.printStackTrace();
             return false;
         }

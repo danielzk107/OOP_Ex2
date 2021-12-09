@@ -1,6 +1,5 @@
 package ex2;
 import org.junit.jupiter.api.Test;
-
 import java.util.HashMap;
 import java.util.Random;
 
@@ -11,12 +10,13 @@ public class AlgorithmsTests {
     public DirectedWeightedGraphClass DWGraphMaker(int size, int numofedges){
         HashMap<Integer, NodeData> nodelist= new HashMap<>();
         HashMap<Integer, EdgeData> edgelist= new HashMap<>();
+        HashMap<Integer,Integer> edgesdone= new HashMap<>();
         HashMap<Double, HashMap<Double,Double>> locationkeeper= new HashMap<>();//keeping track of all the locations we have so we do not have duplicates(no two nodes in the same place)
-        for (int i=1; i<size;i++){
+        for (int i=0; i<size;i++){
             Random rnd= new Random();
             Node temp;
             do {
-                temp = new Node(i, 0, new GeoLocationClass(rnd.nextDouble(), rnd.nextDouble(), rnd.nextDouble()),"");
+                temp = new Node(i, 0, new GeoLocationClass(rnd.nextInt(100), rnd.nextInt(100), rnd.nextInt(100)),"");
             } while(locationkeeper.containsKey(temp.getLocation().x()) && locationkeeper.get(temp.getLocation().x()).containsKey(temp.getLocation().y()) && locationkeeper.get(temp.getLocation().x()).get(temp.getLocation().y())==temp.getLocation().z());
             if(!locationkeeper.containsKey(temp.getLocation().x())){
                 locationkeeper.put(temp.getLocation().x(), new HashMap<>());
@@ -25,16 +25,18 @@ public class AlgorithmsTests {
             nodelist.put(i, temp);
         }
         for(int i=0; i<numofedges;i++){
-            int src,dest;
+            int src=0,dest=0;
             Node srcnode,destnode;
             Random rnd =new Random();
+            boolean condition= edgesdone.containsKey(src) && edgesdone.get(src)==dest;
             do {
-                src= rnd.nextInt(size-1)+1;
+                src= rnd.nextInt(size);
                 srcnode= (Node)nodelist.get(src);
-                dest= rnd.nextInt(size-1)+1;
+                dest= rnd.nextInt(size);
                 destnode= (Node)nodelist.get(dest);
-            }while (src==dest || srcnode.isconnected(dest)==2);
+            }while (src==dest || srcnode.isconnected(dest)==2 || condition);
             double weight= rnd.nextDouble();
+            edgesdone.put(src,dest);
             EdgeDataClass temp = new EdgeDataClass(i, srcnode, destnode, weight, "", 0);
             edgelist.put(i, temp);
             srcnode.AddOutEdge(dest, temp);
@@ -52,8 +54,4 @@ public class AlgorithmsTests {
         boolean actual= dwgalgo.load("resources/G1.json");
         assertEquals(true,actual );
     }
-
-
-
-
 }
