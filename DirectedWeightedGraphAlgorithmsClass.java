@@ -193,27 +193,60 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         return null;
     }
 
+  //helper function
+     public JSONObject toJson(int src,double w, int dest){
+        JSONObject json =new JSONObject();
+        json.put("src",src);
+        json.put("w",w);
+        json.put("dest",dest);
+
+        return json;
+    }
+  //helper function
+    public JSONObject nodetoJ(String pos, int id){
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("pos",pos);
+        jsonObject.put("id",id);
+
+        return jsonObject;
+    }
     @Override
     public boolean save(String file) {
-    JSONArray object= new JSONArray();
-    object.add(this.dwgraph);
-        
-   try {
-        FileWriter fw = new FileWriter(file);
-        fw.write(object.toJSONString());
-        fw.close();
-    } catch (FileNotFoundException e){
-        System.err.println("File not Found");
+        JSONObject object = new JSONObject();
+        JSONObject arr = new JSONObject();
+        JSONArray nodes = new JSONArray();
+        JSONArray edges = new JSONArray();
+        for (EdgeData o : dwgraph.getEdgelist().values()) {
+           JSONObject newEd= toJson(o.getSrc(),o.getWeight(),o.getDest());
+           edges.add(newEd);
+        }
+        for (NodeData o : dwgraph.getNodelist().values()) {
+            String x=String.valueOf(o.getLocation().x());
+            String y=String.valueOf(o.getLocation().y());
+            String z=String.valueOf(o.getLocation().z());
+            String pos= x+","+y+","+z;
+            JSONObject newnode= nodetoJ(pos,o.getKey());
+            nodes.add(newnode);
+        }
+        arr.put("Edges", edges);
+        arr.put("Nodes", nodes);
+try {
+    FileWriter fw= new FileWriter(file);
+    fw.write(arr.toJSONString());
+    fw.close();
+}
+   catch (FileNotFoundException e){
         e.printStackTrace();
         return false;
    } catch (Exception e){
         e.printStackTrace();
         return false;
    }
-        
+
     return true;
-    
-  }
+
+    }
+
   
 
     @Override
