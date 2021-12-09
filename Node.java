@@ -7,6 +7,7 @@ import java.util.List;
 public class Node implements NodeData {
     private int key;
     private int tag;
+    private List<NodeData> shortestPath= new LinkedList<>();
     private List<Integer> connected;//Keeps track of all the nodes that are connected to this one.
     private GeoLocation location;
     private double weight;
@@ -130,5 +131,13 @@ public class Node implements NodeData {
     @Override
     public void setTag(int t) {
         this.tag = t;
+    }
+    
+     public List<NodeData> getShortestPath() {
+        return shortestPath;
+    }
+
+    public void setShortestPath(List<NodeData> shortestPath) {
+        this.shortestPath = shortestPath;
     }
 }
