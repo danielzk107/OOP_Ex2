@@ -78,7 +78,7 @@ public class DirectedWeightedGraphClass implements DirectedWeightedGraph {
         HashMap<Integer, EdgeData> intemp= temp.GetInEdgeList();
         HashMap<Integer, EdgeData> outtemp= temp.GetOutEdgeList();
         EdgeDataClass edge;
-        for(int i:temp.getConnected()){
+        for(int i:temp.getAllconnected()){
             if(intemp.containsKey(i)){
                 edge= (EdgeDataClass)intemp.remove(i);
             }
@@ -95,7 +95,7 @@ public class DirectedWeightedGraphClass implements DirectedWeightedGraph {
     public NodeData removeNode(int key) {
         Node removed= (Node)nodeList.remove(key);
         EdgelistIterator iterator = (EdgelistIterator)edgeIter(key);
-        for(int i: removed.getConnected()){
+        for(int i: removed.getAllconnected()){
             Node temp = (Node)nodeList.get(i);
             temp.RemoveEdge(removed.getKey());
         }

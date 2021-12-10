@@ -8,7 +8,7 @@ public class Node implements NodeData {
     private int key;
     private int tag;
     private List<NodeData> shortestPath= new LinkedList<>();
-    private List<Integer> connected;//Keeps track of all the nodes that are connected to this one.
+    private List<Integer> allconnected, outconnected;//Keeps track of all the nodes that are connected to this one (and all the nodes that go out of this one).
     private GeoLocation location;
     private double weight;
     private String info;
@@ -21,30 +21,37 @@ public class Node implements NodeData {
         this.info=info;
         this.outedgelist= new HashMap<>();
         this.inedgelist= new HashMap<>();
-        connected= new LinkedList<>();
+        allconnected = new LinkedList<>();
+        outconnected= new LinkedList<>();
     }
     public void AddOutEdge(int dest, EdgeData edge){
-        outedgelist.put(dest, edge);
-        connected.add(dest);
+        if(!outedgelist.containsKey(dest)){
+            outedgelist.put(dest, edge);
+            allconnected.add(dest);
+            outconnected.add(dest);
+        }
     }
     public void AddInEdge(int src, EdgeData edge){
-        inedgelist.put(src, edge);
-        connected.add(src);
+        if(!inedgelist.containsKey(src)){
+            inedgelist.put(src, edge);
+            allconnected.add(src);
+        }
     }
     public EdgeData RemoveOutEdge(int dest){
         if(!inedgelist.containsKey(dest)){
-            connected.remove(dest);
+            allconnected.remove(dest);
         }
+        outconnected.remove(dest);
         return outedgelist.remove(dest);
     }
     public EdgeData RemoveInEdge(int src){
         if(!outedgelist.containsKey(src)){
-            connected.remove(src);
+            allconnected.remove(src);
         }
         return inedgelist.remove(src);
     }
     public boolean RemoveEdge(int other){
-        connected.remove(other);
+        allconnected.remove(other);
         boolean condition= false;
         if(inedgelist.containsKey(other)){
             inedgelist.remove(other);
@@ -56,9 +63,13 @@ public class Node implements NodeData {
         }
         return condition;
     }
-    public List<Integer> getConnected() {
-        return connected;
+    public List<Integer> getAllconnected() {
+        return allconnected;
     }
+    public List<Integer> getOutconnected() {
+        return outconnected;
+    }
+
 
     public int isconnected(int other){//returns 0 if not connected, 1 if connected in one way, and 2 if connected in two ways
         int ans = 0;

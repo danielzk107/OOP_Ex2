@@ -45,13 +45,20 @@ public class AlgorithmsTests {
         return new DirectedWeightedGraphClass(nodelist, edgelist, 0);
     }
     @Test
-    void IsCompleteTest(){
-        dwgalgo.init(DWGraphMaker(10,90));
+    void IsCompleteTest() throws InterruptedException {
+        dwgalgo.init(DWGraphMaker(10,20));
+        DWGraphGUI gui= new DWGraphGUI(dwgalgo);
         assertEquals(dwgalgo.isConnected(), true);
+        Thread.sleep(1000);
     }
     @Test
     void LoadTest(){
         boolean actual= dwgalgo.load("resources/G1.json");
         assertEquals(true,actual );
+    }
+    @Test
+    void shortestpathtest(){
+        dwgalgo.load("resources/G1.json");
+
     }
 }

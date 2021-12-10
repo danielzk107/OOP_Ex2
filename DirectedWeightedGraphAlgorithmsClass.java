@@ -7,17 +7,34 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGraphAlgorithms {
+    List<Node>[] arr1, arr2;//arrays for the isConnected function
     private DirectedWeightedGraphClass dwgraph;
     public DirectedWeightedGraphAlgorithmsClass(DirectedWeightedGraphClass g){
         this.dwgraph=g;
+        arr1= new LinkedList[g.nodeSize()];
+        arr2= new LinkedList[g.nodeSize()];
+        for(int i=0; i<g.nodeSize();i++){
+            arr1[i]= new LinkedList<>();
+            arr2[i]= new LinkedList<>();
+        }
     }
     public DirectedWeightedGraphAlgorithmsClass(){
-        this.dwgraph=null;
     }
     @Override
     public void init(DirectedWeightedGraph g) {
         DirectedWeightedGraphClass thecoolerg= (DirectedWeightedGraphClass)g;
         dwgraph = new DirectedWeightedGraphClass(thecoolerg.getNodelist(), thecoolerg.getEdgelist(), g.getMC());
+        arr1= new LinkedList[g.nodeSize()];
+        arr2= new LinkedList[g.nodeSize()];
+        for(int i=0; i<g.nodeSize();i++){
+            Node temp= (Node)dwgraph.getNode(i);
+            arr1[i]= new LinkedList<>();
+            arr2[i]= new LinkedList<>();
+            for(int j = temp.getOutconnected().size()-1, k=0; j>=0; j--, k++){
+                arr1[i].add((Node) dwgraph.getNode(temp.getOutconnected().get(j)));
+                arr2[i].add((Node) dwgraph.getNode(temp.getOutconnected().get(j)));
+            }
+        }
     }
 
     @Override
@@ -29,25 +46,28 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
     public DirectedWeightedGraph copy() {
         return new DirectedWeightedGraphClass(dwgraph.getNodelist(), dwgraph.getEdgelist(), dwgraph.getMC());
     }
-    public boolean[] DFS(int a, boolean arr[]){
-        arr[a]= true;
-        Node anode= (Node)dwgraph.getNode(a);
-        for(int i: anode.getConnected()){
-            if(!arr[i]){
-                DFS(i, arr);
+    public void DFS1(int a){
+        dwgraph.getNode(a).setTag(1);
+        for(Node n: arr1[a]){
+            if(n.getTag()!=1){
+                DFS1(n.getKey());
             }
         }
-        return arr;
+    }
+    public void DFS2(int b){
+        dwgraph.getNode(b).setTag(1);
+        for (Node n: arr2[b]){
+            if(n.getTag()!=1){
+                DFS2(n.getKey());
+            }
+        }
     }
     @Override
     public boolean isConnected() {
-        boolean arr1[]= new boolean[dwgraph.nodeSize()+1];
-        boolean arr2[]= new boolean[dwgraph.nodeSize()];
-        Arrays.fill(arr1, false);
-        Arrays.fill(arr2, false);
-        arr1= DFS(1, arr1);
+        DFS1(1);
+        DFS2(1);
         for (int i=1; i< dwgraph.nodeSize();i++){
-            if(!arr1[i]){
+            if(dwgraph.getNode(i).getTag()!=1){
                 return false;
             }
         }
@@ -70,8 +90,9 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         while (unsettled.size()!=0){
             Node curr= getLow(unsettled);
             unsettled.remove(curr);
-            for (Integer i : curr.getConnected()) {
+            for (Integer i : curr.getAllconnected()) {
                 Node adj= (Node) dwgraph.getNode(i);
+                System.out.println("src= "+curr.getKey()+", dest= "+i);
                 double edgeweight= dwgraph.getEdge(curr.getKey(),i).getWeight();
                 if(!settled.contains(adj)){
                   calculatMinCost(adj,edgeweight,curr);
@@ -124,7 +145,7 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         while (!q.isEmpty()){
             Node node = (Node) q.poll();
             q.remove(node);//visited
-            for (Integer i :node.getConnected()){
+            for (Integer i :node.getAllconnected()){
                 //if w(src)+w(edge(src,neighbor))< w(neighbor)
                 double weight=(node.getWeight()+dwgraph.getEdge(node.getKey(),i).getWeight());
                 if ( weight < dwgraph.getNode(i).getWeight()){
@@ -139,17 +160,15 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         }
         return ans;
     }
-
     @Override
     public List<NodeData> shortestPath(int src, int dest) {
         List<NodeData> ans;
         ans=helper(src,dest);
         return ans;
     }
-
     @Override
     public NodeData center() {
-        if(!isConnected()){
+        if(!this.isConnected()){
             return null;
         }
         int[] numberofapereances= new int[dwgraph.nodeSize()];
@@ -178,7 +197,6 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         }
         return dwgraph.getNode(max);
     }
-
     @Override
     public List<NodeData> tsp(List<NodeData> cities) {
 //        HashMap<Integer,NodeData> nodelist= new HashMap<>();
@@ -218,7 +236,6 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         //UNFINISHED
         return null;
     }
-
   //helper function
      public JSONObject toJson(int src,double w, int dest){
         JSONObject json =new JSONObject();
@@ -272,9 +289,6 @@ try {
     return true;
 
     }
-
-  
-
     @Override
     public boolean load(String file) {
         JSONParser parser= new JSONParser();
