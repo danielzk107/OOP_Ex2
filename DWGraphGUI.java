@@ -171,7 +171,9 @@ public class DWGraphGUI extends JFrame {
         }
         int x= (int)centre.getLocation().x();
         int y= (int)centre.getLocation().y();
-        g.drawOval(x, y, 3, 3);
+        g.setColor(Color.magenta);
+//        g.drawOval(x, y, 3, 3);
+        g.fillOval(x,y+80,3,3);
     }
     public void save(String filename){
         originalgraph.save(filename);
@@ -180,9 +182,9 @@ public class DWGraphGUI extends JFrame {
         DWGraphGUI x= new DWGraphGUI();
         AlgorithmsTests t= new AlgorithmsTests();
 //        x.dwgalgo.load("resources/G1.json");
-//        x.dwgalgo.load("Test1.json");
-//        x.firstinit(x.dwgalgo.getGraph());
-        x.firstinit(t.DWGraphMaker(10,90));
+        x.dwgalgo.load("Test.json");
+        x.firstinit(x.dwgalgo.getGraph());
+//        x.firstinit(t.DWGraphMaker(5,10));
         double[] arr= XdiffandYdiff((DirectedWeightedGraphClass)x.dwgalgo.getGraph());
         x.Setxandydiff(arr);
         while(arr[0]<100){//finding the correct measurements required for the frame.
@@ -202,7 +204,9 @@ public class DWGraphGUI extends JFrame {
         }
         x.ChangeSize((int)Math.round(arr[0]), (int)Math.round(arr[1]+80));
         x.CorrectGraph();
-//        x.save("Test1.json");
+//        if(x.dwgalgo.isConnected()){
+//            x.save("Test.json");
+//        }
 //        AlgorithmsTests t= new AlgorithmsTests();
 //        DirectedWeightedGraph graph= t.DWGraphMaker(10,20);
 //        DirectedWeightedGraphAlgorithms g= new DirectedWeightedGraphAlgorithmsClass((DirectedWeightedGraphClass) graph);

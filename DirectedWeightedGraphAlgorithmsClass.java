@@ -8,9 +8,12 @@ import org.json.simple.parser.JSONParser;
 
 public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGraphAlgorithms {
     List<Node>[] arr1, arr2;//arrays for the isConnected function
+    private double[][] shortestdistarr;//matrix that keeps the shortest distance from every two nodes
+    private boolean shortestdistrun;//keeps track of whether the shortestpathdist function has ran or not
     private DirectedWeightedGraphClass dwgraph;
     public DirectedWeightedGraphAlgorithmsClass(DirectedWeightedGraphClass g){
         this.dwgraph=g;
+        shortestdistrun=false;
         arr1= new LinkedList[g.nodeSize()];
         arr2= new LinkedList[g.nodeSize()];
         for(int i=0; i<g.nodeSize();i++){
@@ -19,11 +22,13 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         }
     }
     public DirectedWeightedGraphAlgorithmsClass(){
+        shortestdistrun=false;
     }
     @Override
     public void init(DirectedWeightedGraph g) {
         DirectedWeightedGraphClass thecoolerg= (DirectedWeightedGraphClass)g;
         dwgraph = new DirectedWeightedGraphClass(thecoolerg.getNodelist(), thecoolerg.getEdgelist(), g.getMC());
+        shortestdistrun=false;
         arr1= new LinkedList[g.nodeSize()];
         arr2= new LinkedList[g.nodeSize()];
         for(int i=0; i<g.nodeSize();i++){
@@ -90,7 +95,7 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         while (unsettled.size()!=0){
             Node curr= getLow(unsettled);
             unsettled.remove(curr);
-            for (Integer i : curr.getAllconnected()) {
+            for (Integer i : curr.getOutconnected()) {
                 Node adj= (Node) dwgraph.getNode(i);
                 System.out.println("src= "+curr.getKey()+", dest= "+i);
                 double edgeweight= dwgraph.getEdge(curr.getKey(),i).getWeight();
@@ -106,6 +111,34 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         }
         return -1;
     }
+//    public double NewShortestPathDist(int src, int dest){
+//        if(shortestdistarr[src][dest]>0){
+//            return shortestdistarr[src][dest];
+//        }
+//        else if(shortestdistrun){
+//            return -1;//the nodes are not connected
+//        }
+//        for(int i=0;i< dwgraph.nodeSize();i++){
+//            for(int j=0;j< dwgraph.nodeSize();j++){
+//                if(((Node)dwgraph.getNode(i)).GetOutEdgeList().containsKey(j)){
+//                    shortestdistarr[i][j]=((Node)dwgraph.getNode(i)).GetOutEdgeList().get(j).getWeight();
+//                }
+//                else{
+//                    shortestdistarr[i][j]=Double.MAX_VALUE/2;
+//                }
+//            }
+//        }
+//        for(int k=0; k< dwgraph.nodeSize();k++){
+//            for(int i=0; i< dwgraph.nodeSize();i++){
+//                for(int j=0; j< dwgraph.nodeSize();j++){
+//                    if(shortestdistarr[i][j]>shortestdistarr[i][k]+shortestdistarr[k][j]){
+//                        shortestdistarr[i][j]=shortestdistarr[i][k]+shortestdistarr[k][j];
+//                    }
+//                }
+//            }
+//        }
+//        return shortestdistarr[src][dest];
+//    }
     
     private Node getLow(HashSet<NodeData> unsettled) {
         NodeData low=null;
@@ -167,35 +200,28 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         return ans;
     }
     @Override
-    public NodeData center() {
+    public NodeData center() {//The function calculates the distances from every node to every other node and returns the node which is closest to its furthest node (the node where the path from it to the node furthest away from it is the shortest).
         if(!this.isConnected()){
             return null;
         }
-        int[] numberofapereances= new int[dwgraph.nodeSize()];
-        int[] minarr= new int[dwgraph.nodeSize()];//keeps the node that is closest(shortest path) to the node represented by minarr[i]
+        double[] maximumshortestpath= new double[dwgraph.nodeSize()];//for every i, maximumshortestpath[i] keeps the length of the path from it to the node furthest away from it.
         for(int i=0; i< dwgraph.nodeSize();i++){
             double[] distance=new double[dwgraph.nodeSize()];//keeps the distance between the node i and the node distance[j]
-            minarr[i]=0;//placeholder that would change shortly(unless it fits the requirements)
             for(int j=0; j< dwgraph.nodeSize();j++){
                 distance[j]=shortestPathDist(i,j);
             }
-            for(int j=0; j< dwgraph.nodeSize();j++){
-                if(i!=j){
-                    if(distance[minarr[i]]>distance[j]){
-                        numberofapereances[j]++;
-                        numberofapereances[minarr[i]]--;
-                        minarr[i]=j;
-                    }
-                }
-            }
+            Arrays.sort(distance);
+            maximumshortestpath[i]= distance[0];
         }
-        int max=0, maxnum=Integer.MIN_VALUE;
+        int minnode=0;
+        double mindist=Double.MAX_VALUE;
         for(int i=0; i< dwgraph.nodeSize();i++){
-            if(numberofapereances[i]>maxnum){
-                max=i;
+            if(maximumshortestpath[i]<mindist){
+                mindist=maximumshortestpath[i];
+                minnode=i;
             }
         }
-        return dwgraph.getNode(max);
+        return dwgraph.getNode(minnode);
     }
     @Override
     public List<NodeData> tsp(List<NodeData> cities) {
