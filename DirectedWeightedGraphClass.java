@@ -28,6 +28,12 @@ public class DirectedWeightedGraphClass implements DirectedWeightedGraph {
         this.edgelist = edgelist;
         modcounter++;
     }
+    public HashMap SetTagForNode(int node, int tag){
+        NodeData temp= nodeList.remove(node);
+        temp.setTag(tag);
+        nodeList.put(node, temp);
+        return  nodeList;
+    }
     public HashMap<Integer, EdgeData> getEdgelist() {
         return edgelist;
     }

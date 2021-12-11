@@ -151,13 +151,13 @@ public class DWGraphGUI extends JFrame {
             EdgeData temp= new EdgeDataClass(i,(Node)newnodelist.get(src), (Node)newnodelist.get(dest), weight , "", 0);
             newedgelist.put(i,temp);
         }
-        init(new DirectedWeightedGraphClass(newnodelist,newedgelist,0));
+        dwgalgo.init(new DirectedWeightedGraphClass(newnodelist,newedgelist,0));
     }
     public void PrintTSP(List<NodeData> cities){
         List<NodeData> outputlist= dwgalgo.tsp(cities);
     }
     public void ShowGraphAction(Graphics g){
-//        g.clearRect(0,80,width,height);
+        g.clearRect(0,80,width,height);
         PrintGraph();
 //        btn.setEnabled(false);
     }
@@ -172,8 +172,9 @@ public class DWGraphGUI extends JFrame {
         int x= (int)centre.getLocation().x();
         int y= (int)centre.getLocation().y();
         g.setColor(Color.magenta);
+        g.drawString("The centre node is node number "+centre.getKey(), 250, 250);
 //        g.drawOval(x, y, 3, 3);
-        g.fillOval(x,y+80,3,3);
+        g.fillOval(x,y+80,5,5);
     }
     public void save(String filename){
         originalgraph.save(filename);
@@ -182,9 +183,9 @@ public class DWGraphGUI extends JFrame {
         DWGraphGUI x= new DWGraphGUI();
         AlgorithmsTests t= new AlgorithmsTests();
 //        x.dwgalgo.load("resources/G1.json");
-        x.dwgalgo.load("Test.json");
-        x.firstinit(x.dwgalgo.getGraph());
-//        x.firstinit(t.DWGraphMaker(5,10));
+//        x.dwgalgo.load("Test.json");
+//        x.firstinit(x.dwgalgo.getGraph());
+        x.firstinit(t.DWGraphMaker(5,10));
         double[] arr= XdiffandYdiff((DirectedWeightedGraphClass)x.dwgalgo.getGraph());
         x.Setxandydiff(arr);
         while(arr[0]<100){//finding the correct measurements required for the frame.

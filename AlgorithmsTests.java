@@ -16,7 +16,7 @@ public class AlgorithmsTests {
             Random rnd= new Random();
             Node temp;
             do {
-                temp = new Node(i, 0, new GeoLocationClass(rnd.nextInt(100), rnd.nextInt(100), rnd.nextInt(100)),"");
+                temp = new Node(i, 0, new GeoLocationClass(rnd.nextDouble(), rnd.nextDouble(), rnd.nextDouble()),"");
             } while(locationkeeper.containsKey(temp.getLocation().x()) && locationkeeper.get(temp.getLocation().x()).containsKey(temp.getLocation().y()) && locationkeeper.get(temp.getLocation().x()).get(temp.getLocation().y())==temp.getLocation().z());
             if(!locationkeeper.containsKey(temp.getLocation().x())){
                 locationkeeper.put(temp.getLocation().x(), new HashMap<>());
@@ -28,13 +28,12 @@ public class AlgorithmsTests {
             int src=0,dest=0;
             Node srcnode,destnode;
             Random rnd =new Random();
-            boolean condition= edgesdone.containsKey(src) && edgesdone.get(src)==dest;
             do {
                 src= rnd.nextInt(size);
                 srcnode= (Node)nodelist.get(src);
                 dest= rnd.nextInt(size);
                 destnode= (Node)nodelist.get(dest);
-            }while (src==dest || srcnode.isconnected(dest)==2 || condition);
+            }while (src==dest || srcnode.isconnected(dest)==2 || srcnode.GetOutEdgeList().containsKey(dest));
             double weight= rnd.nextDouble();
             edgesdone.put(src,dest);
             EdgeDataClass temp = new EdgeDataClass(i, srcnode, destnode, weight, "", 0);
