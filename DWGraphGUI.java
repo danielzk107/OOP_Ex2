@@ -185,7 +185,7 @@ public class DWGraphGUI extends JFrame {
 //        x.dwgalgo.load("resources/G1.json");
 //        x.dwgalgo.load("Test.json");
 //        x.firstinit(x.dwgalgo.getGraph());
-        x.firstinit(t.DWGraphMaker(5,10));
+        x.firstinit(t.DWGraphMaker(10000,200000));
         double[] arr= XdiffandYdiff((DirectedWeightedGraphClass)x.dwgalgo.getGraph());
         x.Setxandydiff(arr);
         while(arr[0]<100){//finding the correct measurements required for the frame.

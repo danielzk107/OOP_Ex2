@@ -48,7 +48,6 @@ public class AlgorithmsTests {
         dwgalgo.init(DWGraphMaker(10,20));
         DWGraphGUI gui= new DWGraphGUI(dwgalgo);
         assertEquals(dwgalgo.isConnected(), true);
-        Thread.sleep(1000);
     }
     @Test
     void LoadTest(){
