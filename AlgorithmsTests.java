@@ -44,19 +44,18 @@ public class AlgorithmsTests {
         return new DirectedWeightedGraphClass(nodelist, edgelist, 0);
     }
     @Test
-    void IsCompleteTest(){
-        dwgalgo.init(DWGraphMaker(10000,200000));
+    void IsConnectedTest(){
+        dwgalgo.init(DWGraphMaker(1000,2000));
         DWGraphGUI gui= new DWGraphGUI(dwgalgo);
-        assertEquals(dwgalgo.isConnected(), true);
+        assertTrue(dwgalgo.isConnected());
     }
     @Test
     void LoadTest(){
         boolean actual= dwgalgo.load("resources/G1.json");
-        assertEquals(true,actual );
+        assertTrue(actual);
     }
     @Test
     void shortestpathtest(){
         dwgalgo.load("resources/G1.json");
-
     }
 }

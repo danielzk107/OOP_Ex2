@@ -8,7 +8,7 @@ public class Node implements NodeData {
     private int key;
     private int tag;
     private List<NodeData> shortestPath= new LinkedList<>();
-    private List<Integer> allconnected, outconnected;//Keeps track of all the nodes that are connected to this one (and all the nodes that go out of this one).
+    private List<Integer> allconnected, outconnected, inconnected;//Keeps track of all the nodes that are connected to this one (and all the nodes that go out of this one).
     private GeoLocation location;
     private double weight;
     private String info;
@@ -23,6 +23,7 @@ public class Node implements NodeData {
         this.inedgelist= new HashMap<>();
         allconnected = new LinkedList<>();
         outconnected= new LinkedList<>();
+        inconnected= new LinkedList<>();
     }
     public void AddOutEdge(int dest, EdgeData edge){
         if(!outedgelist.containsKey(dest)){
@@ -35,6 +36,7 @@ public class Node implements NodeData {
         if(!inedgelist.containsKey(src)){
             inedgelist.put(src, edge);
             allconnected.add(src);
+            inconnected.add(src);
         }
     }
     public EdgeData RemoveOutEdge(int dest){
@@ -68,6 +70,9 @@ public class Node implements NodeData {
     }
     public List<Integer> getOutconnected() {
         return outconnected;
+    }
+    public List<Integer> getInConnected(){
+        return inconnected;
     }
 
 

@@ -13,11 +13,18 @@ class ThreadforPrint extends Thread{
         this.end=end;
     }
     public void run(){
-
+        Graphics g= dwgui.getGraphics();
+        for (int i=start;i<end;i++){
+            EdgeDataClass temp= (EdgeDataClass) dwgui.dwgalgo.dwgraph.getEdgelist().get(i);
+            g.setColor(Color.GREEN);
+            GeoLocationClass location1= (GeoLocationClass) dwgui.dwgalgo.dwgraph.getNode(temp.getSrc()).getLocation();
+            GeoLocationClass location2= (GeoLocationClass)  dwgui.dwgalgo.dwgraph.getNode(temp.getDest()).getLocation();
+            g.drawLine((int)location1.x(), (int)location1.y()+80, (int)location2.x(), (int)location2.y()+80);
+        }
     }
 }
 public class DWGraphGUI extends JFrame {
-    private DirectedWeightedGraphAlgorithmsClass dwgalgo;
+    public DirectedWeightedGraphAlgorithmsClass dwgalgo;
     private DirectedWeightedGraphAlgorithmsClass originalgraph;
     private JPanel panel;
     private JButton btn, centrebtn;
@@ -81,7 +88,6 @@ public class DWGraphGUI extends JFrame {
     public void PrintGraph(){
         Graphics g= getGraphics();
         DirectedWeightedGraphClass graph=(DirectedWeightedGraphClass)dwgalgo.getGraph();
-        HashMap<Integer,Integer> edgesdone=new HashMap<>();
         ThreadforPrint t1= new ThreadforPrint(this, 0, (int)Math.ceil(graph.edgeSize()/4.0));
         ThreadforPrint t2= new ThreadforPrint(this, (int)Math.ceil(graph.edgeSize()/4.0), (int)Math.ceil(graph.edgeSize()/2.0));
         ThreadforPrint t3= new ThreadforPrint(this, (int)Math.ceil(graph.edgeSize()/2.0), (int)Math.ceil(graph.edgeSize()*3/4.0));
@@ -90,18 +96,6 @@ public class DWGraphGUI extends JFrame {
         t3.start();
         for (int i=(int)Math.ceil(graph.edgeSize()*3/4.0);i<graph.edgeSize();i++){
             EdgeDataClass temp= (EdgeDataClass)graph.getEdgelist().get(i);
-            if(edgesdone.containsKey(temp.getDest())){
-                if(edgesdone.get(temp.getDest())==temp.getSrc()){
-                    g.setColor(Color.BLUE);
-                }
-                else{
-                    g.setColor(Color.GREEN);
-                }
-            }
-            else{
-                g.setColor(Color.GREEN);
-            }
-            edgesdone.put(temp.getSrc(), temp.getDest());
             g.setColor(Color.GREEN);
             GeoLocationClass location1= (GeoLocationClass) graph.getNode(temp.getSrc()).getLocation();
             GeoLocationClass location2= (GeoLocationClass) graph.getNode(temp.getDest()).getLocation();
@@ -201,9 +195,9 @@ public class DWGraphGUI extends JFrame {
         DWGraphGUI x= new DWGraphGUI();
         AlgorithmsTests t= new AlgorithmsTests();
 //        x.dwgalgo.load("resources/G1.json");
-//        x.dwgalgo.load("Test.json");
-//        x.firstinit(x.dwgalgo.getGraph());
-        x.firstinit(t.DWGraphMaker(10000,100000));
+        x.dwgalgo.load("Test.json");
+        x.firstinit(x.dwgalgo.getGraph());
+//        x.firstinit(t.DWGraphMaker(1000,10000));
         double[] arr= XdiffandYdiff((DirectedWeightedGraphClass)x.dwgalgo.getGraph());
         x.Setxandydiff(arr);
         while(arr[0]<100){//finding the correct measurements required for the frame.
