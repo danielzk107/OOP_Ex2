@@ -44,8 +44,8 @@ public class AlgorithmsTests {
         return new DirectedWeightedGraphClass(nodelist, edgelist, 0);
     }
     @Test
-    void IsCompleteTest() throws InterruptedException {
-        dwgalgo.init(DWGraphMaker(10,20));
+    void IsCompleteTest(){
+        dwgalgo.init(DWGraphMaker(10000,200000));
         DWGraphGUI gui= new DWGraphGUI(dwgalgo);
         assertEquals(dwgalgo.isConnected(), true);
     }

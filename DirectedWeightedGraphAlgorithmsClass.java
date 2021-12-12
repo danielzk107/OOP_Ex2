@@ -15,6 +15,16 @@ class ThreadforShortestPath extends Thread{
         this.end=end;
     }
     public void run(){
+        for(int i=start;i< end;i++){
+            for(int j=start;j< dwgalgo.dwgraph.nodeSize();j++){
+                if(((Node)dwgalgo.dwgraph.getNode(i)).GetOutEdgeList().containsKey(j)){
+                    dwgalgo.shortestdistarr[i][j]=((Node)dwgalgo.dwgraph.getNode(i)).GetOutEdgeList().get(j).getWeight();
+                }
+                else{
+                    dwgalgo.shortestdistarr[i][j]=Double.MAX_VALUE/2;
+                }
+            }
+        }
         for(int k=start; k< end;k++){
             for(int i=start; i< end;i++){
                 for(int j=start; j< end;j++){
@@ -126,6 +136,27 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         }
         return true;
     }
+    public boolean NewisConnected(){//Incredibly inefficient, but the original function does not work because of inconsistent and unexplainable memory issues.
+        if(isconnectedrun){
+            return isconnected;
+        }
+        isconnectedrun=true;
+        double[][] results= new double[dwgraph.nodeSize()][dwgraph.nodeSize()];
+        for(int i=0; i< dwgraph.nodeSize();i++){
+            for(int j=0; j< dwgraph.nodeSize();j++){
+                if(i!=j){
+                    results[i][j]= NewShortestPathDist(i,j);
+                    if(results[i][j]==Double.MAX_VALUE/2 || results[i][j]==Double.MAX_VALUE){
+                        isconnected=false;
+                        return false;
+                    }
+                    System.out.println("Distance between node number "+i+" and node number "+j+" is: "+ results[i][j]);
+                }
+            }
+        }
+        isconnected=true;
+        return true;
+    }
 
     @Override
     public double shortestPathDist(int src, int dest) {
@@ -145,7 +176,7 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
             unsettled.remove(curr);
             for (Integer i : curr.getOutconnected()) {
                 Node adj= (Node) dwgraph.getNode(i);
-                System.out.println("src= "+curr.getKey()+", dest= "+i);
+//                System.out.println("src= "+curr.getKey()+", dest= "+i);
                 double edgeweight= dwgraph.getEdge(curr.getKey(),i).getWeight();
                 if(!settled.contains(adj)){
                   calculatMinCost(adj,edgeweight,curr);
@@ -167,8 +198,14 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
             return -1;//the nodes are not connected
         }
         shortestdistrun=true;
-        for(int i=0;i< dwgraph.nodeSize();i++){
-            for(int j=0;j< dwgraph.nodeSize();j++){
+        ThreadforShortestPath t1= new ThreadforShortestPath(this,0,(int) Math.ceil(dwgraph.nodeSize()/4.0));
+        ThreadforShortestPath t2= new ThreadforShortestPath(this,(int) Math.ceil(dwgraph.nodeSize()/4.0), (int) Math.ceil(dwgraph.nodeSize()/2.0));
+        ThreadforShortestPath t3= new ThreadforShortestPath(this,(int) Math.ceil(dwgraph.nodeSize()/2.0),(int) Math.ceil(dwgraph.nodeSize()*(3.0/4)));
+        t1.start();
+        t2.start();
+        t3.start();
+        for(int i=(int) Math.ceil(dwgraph.nodeSize()*(3.0/4));i< dwgraph.nodeSize();i++){
+            for(int j=(int) Math.ceil(dwgraph.nodeSize()*(3.0/4));j< dwgraph.nodeSize();j++){
                 if(((Node)dwgraph.getNode(i)).GetOutEdgeList().containsKey(j)){
                     shortestdistarr[i][j]=((Node)dwgraph.getNode(i)).GetOutEdgeList().get(j).getWeight();
                 }
@@ -177,15 +214,9 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
                 }
             }
         }
-        ThreadforShortestPath t1= new ThreadforShortestPath(this,0,(int) Math.ceil(dwgraph.nodeSize()/4.0));
-        ThreadforShortestPath t2= new ThreadforShortestPath(this,(int) Math.floor(dwgraph.nodeSize()/4.0), (int) Math.ceil(dwgraph.nodeSize()*(3.0/4)));
-        ThreadforShortestPath t3= new ThreadforShortestPath(this,(int) Math.floor(dwgraph.nodeSize()*(3.0/4)),(int) Math.ceil(dwgraph.nodeSize()/2.0));
-        t1.start();
-        t2.start();
-        t3.start();
-        for(int k=(int) Math.ceil(dwgraph.edgeSize()/2.0); k< dwgraph.nodeSize();k++){
-            for(int i=(int) Math.ceil(dwgraph.edgeSize()/2.0); i< dwgraph.nodeSize();i++){
-                for(int j=(int) Math.ceil(dwgraph.edgeSize()/2.0); j< dwgraph.nodeSize();j++){
+        for(int k=(int) Math.ceil(dwgraph.nodeSize()*(3.0/4)); k< dwgraph.nodeSize();k++){
+            for(int i=(int) Math.ceil(dwgraph.nodeSize()*(3.0/4)); i< dwgraph.nodeSize();i++){
+                for(int j=(int) Math.ceil(dwgraph.nodeSize()*(3.0/4)); j< dwgraph.nodeSize();j++){
                     if(shortestdistarr[i][j]>shortestdistarr[i][k]+shortestdistarr[k][j]){
                         shortestdistarr[i][j]=shortestdistarr[i][k]+shortestdistarr[k][j];
                     }
@@ -217,8 +248,6 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
             adj.setShortestPath(shortestPath);
         }
     }
-    
-    
     //helper function
     private List<NodeData> helper(int src, int dest) {
         List<NodeData> ans= new LinkedList<>();
@@ -257,7 +286,10 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
     @Override
     public NodeData center() {//The function calculates the distances from every node to every other node and returns the node which is closest to its furthest node (the node where the path from it to the node furthest away from it is the shortest).
         long starttime= System.currentTimeMillis();
-        if(!this.isConnected()){
+        if(!this.NewisConnected()){
+            System.out.println("Graph is not connected");
+            System.out.println("Start time= "+starttime);
+            System.out.println("Stop time= "+System.currentTimeMillis());
             return null;
         }
         System.out.println("Graph is connected");
@@ -265,10 +297,16 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         for(int i=0; i< dwgraph.nodeSize();i++){
             double[] distance=new double[dwgraph.nodeSize()];//keeps the distance between the node i and the node distance[j]
             for(int j=0; j< dwgraph.nodeSize();j++){
-                distance[j]=NewShortestPathDist(i,j);
+                distance[j]=NewShortestPathDist(i,j);//Exponentially quicker than shortestPathDist().
+//                distance[j]=shortestPathDist(i,j);
             }
-            Arrays.sort(distance);
-            maximumshortestpath[i]= distance[0];
+            double maxdist=Double.MIN_VALUE;
+            for(int j=0; j< dwgraph.nodeSize();j++){
+                if(distance[j]>maxdist){
+                    maxdist=distance[j];
+                }
+            }
+            maximumshortestpath[i]= maxdist;
         }
         int minnode=0;
         double mindist=Double.MAX_VALUE;
