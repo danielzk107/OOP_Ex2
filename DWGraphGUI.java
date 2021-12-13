@@ -193,6 +193,9 @@ public class DWGraphGUI extends JFrame {
     public void ShowGraphAction(Graphics g){
         g.clearRect(0,80,width,height);
         PrintGraph();
+        for(int i=0; i<dwgalgo.dwgraph.nodeSize();i++){
+            HighlightNode(i);
+        }
 //        btn.setEnabled(false);
     }
     public void CentreAction(Graphics g){
@@ -235,12 +238,22 @@ public class DWGraphGUI extends JFrame {
         ChangeSize((int)Math.round(arr[0]), (int)Math.round(arr[1]+80));
         CorrectGraph();
     }
+    public void HighlightNode(int node){
+        NodeData node1= dwgalgo.dwgraph.getNode(node);
+        int x= (int) node1.getLocation().x();
+        int y= (int) node1.getLocation().y();
+        Graphics g= getGraphics();
+        g.drawString(String.valueOf(node),x,y+80);
+    }
     public static void main(String[]args){//Main function to Test the capabilities of Java Swing.
         DWGraphGUI x= new DWGraphGUI();
         AlgorithmsTests t= new AlgorithmsTests();
-        x.dwgalgo.load("resources/G3.json");
-//        x.dwgalgo.load("Test2.json");
+//        x.dwgalgo.load("resources/G3.json");
+        x.dwgalgo.load("Test.json");
         x.FirstSetup();
+        System.out.println(x.dwgalgo.shortestPathDist(0,3));
+        List<NodeData> list= x.dwgalgo.shortestPath(0,3);
+        int c=0;
 //        if(x.dwgalgo.isConnected()){
 //            x.save("Test.json");
 //        }

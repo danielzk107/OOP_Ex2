@@ -91,29 +91,21 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
     public DirectedWeightedGraph copy() {
         return new DirectedWeightedGraphClass(dwgraph.getNodelist(), dwgraph.getEdgelist(), dwgraph.getMC());
     }
-    public void DFS1(int a){
+    public void DFS(int a){
         dwgraph.getNode(a).setTag(1);
         for(int n: ((Node)dwgraph.getNode(a)).getOutconnected()){
             if(dwgraph.getNode(n).getTag()!=1){
-                DFS1(n);
+                DFS(n);
             }
         }
     }
-//    public void DFS2(int a){
-//        dwgraph.getNode(a).setTag(1);
-//        for(int n: ((Node)dwgraph.getNode(a)).getInConnected()){
-//            if(dwgraph.getNode(n).getTag()!=1){
-//                DFS2(n);
-//            }
-//        }
-//    }
     @Override
     public boolean isConnected(){
         if(isconnectedrun){
             return isconnected;
         }
         isconnectedrun=true;
-        DFS1(0);
+        DFS(0);
         for (int i=0; i< dwgraph.nodeSize();i++){
             if(dwgraph.getNode(i).getTag()!=1){
                 isconnected=false;
@@ -123,7 +115,7 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         }
         DirectedWeightedGraphClass temp= dwgraph;
         dwgraph=ReverseGraph();
-        DFS1(0);
+        DFS(0);
         for (int i=0; i< dwgraph.nodeSize();i++){
             if(dwgraph.getNode(i).getTag()!=1){
                 isconnected=false;
@@ -199,66 +191,6 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
 
         return shortestdistarr[src][dest];
     }
-//    public double NewShortestPathDist(int src, int dest){
-//        if(shortestdistarr[src][dest]>0){
-//            return shortestdistarr[src][dest];
-//        }
-//        else if(shortestdistrun){
-//            return -1;//the nodes are not connected
-//        }
-//        shortestdistrun=true;
-//        if(dwgraph.nodeSize()>50){
-//            ThreadforShortestPath t1= new ThreadforShortestPath(this,0,(int) Math.ceil(dwgraph.nodeSize()/4.0));
-//            ThreadforShortestPath t2= new ThreadforShortestPath(this,(int) Math.ceil(dwgraph.nodeSize()/4.0), (int) Math.ceil(dwgraph.nodeSize()/2.0));
-//            ThreadforShortestPath t3= new ThreadforShortestPath(this,(int) Math.ceil(dwgraph.nodeSize()/2.0),(int) Math.ceil(dwgraph.nodeSize()*(3.0/4)));
-//            t1.start();
-//            t2.start();
-//            t3.start();
-//            for(int i=(int) Math.ceil(dwgraph.nodeSize()*(3.0/4));i< dwgraph.nodeSize();i++){
-//                for(int j=(int) Math.ceil(dwgraph.nodeSize()*(3.0/4));j< dwgraph.nodeSize();j++){
-//                    if(((Node)dwgraph.getNode(i)).GetOutEdgeList().containsKey(j)){
-//                        shortestdistarr[i][j]=((Node)dwgraph.getNode(i)).GetOutEdgeList().get(j).getWeight();
-//                    }
-//                    else{
-//                        shortestdistarr[i][j]=Double.MAX_VALUE/2;
-//                    }
-//                }
-//            }
-//            for(int k=(int) Math.ceil(dwgraph.nodeSize()*(3.0/4)); k< dwgraph.nodeSize();k++){
-//                for(int i=(int) Math.ceil(dwgraph.nodeSize()*(3.0/4)); i< dwgraph.nodeSize();i++){
-//                    for(int j=(int) Math.ceil(dwgraph.nodeSize()*(3.0/4)); j< dwgraph.nodeSize();j++){
-//                        if(shortestdistarr[i][j]>shortestdistarr[i][k]+shortestdistarr[k][j]){
-//                            shortestdistarr[i][j]=shortestdistarr[i][k]+shortestdistarr[k][j];
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        else{
-//            for(int i=0;i< dwgraph.nodeSize();i++){
-//                for(int j=0;j< dwgraph.nodeSize();j++){
-//                    if(((Node)dwgraph.getNode(i)).GetOutEdgeList().containsKey(j)){
-//                        shortestdistarr[i][j]=((Node)dwgraph.getNode(i)).GetOutEdgeList().get(j).getWeight();
-//                    }
-//                    else{
-//                        shortestdistarr[i][j]=Double.MAX_VALUE/2;
-//                    }
-//                }
-//            }
-//            for(int k=0; k< dwgraph.nodeSize();k++){
-//                for(int i=0; i< dwgraph.nodeSize();i++){
-//                    for(int j=0; j< dwgraph.nodeSize();j++){
-//                        if(shortestdistarr[i][j]>shortestdistarr[i][k]+shortestdistarr[k][j]){
-//                            shortestdistarr[i][j]=shortestdistarr[i][k]+shortestdistarr[k][j];
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//        return shortestdistarr[src][dest];
-//    }
-    
     private Node getLow(HashSet<NodeData> unsettled) {
         NodeData low=null;
         double lowestWeight= Integer.MAX_VALUE;
@@ -283,32 +215,31 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
     }
     //helper function
     private List<NodeData> helper(int src, int dest) {
-       List<NodeData> ans= new LinkedList<>();
-            //reset all the node weight to infinite
-            for (NodeData i:dwgraph.getNodelist().values()){
-                i.setWeight(Double.POSITIVE_INFINITY/2);//setting it to (max number)/2 so when we add it to itself it doesnt turn into a negative number
-            }
-            dwgraph.getNode(src).setWeight(0.0);
+        List<NodeData> ans= new LinkedList<>();
+        for (NodeData i:dwgraph.getNodelist().values()){
+            i.setWeight(Double.POSITIVE_INFINITY);
+        }
 
-            HashSet<NodeData> settled= new HashSet<>();
-            HashSet<NodeData> unsettled= new HashSet<>();
+        Queue<NodeData> q = new LinkedList<>();
+        q.add(dwgraph.getNode(src));//add src in the queue
+        dwgraph.getNode(src).setWeight(0.0);
 
-            unsettled.add(dwgraph.getNode(src));
-            while (unsettled.size()!=0){
-                Node curr= getLow(unsettled);
-                unsettled.remove(curr);
-                for (Integer i : curr.getOutconnected()) {
-                    Node adj= (Node) dwgraph.getNode(i);
-                    double edgeweight= dwgraph.getEdge(curr.getKey(),i).getWeight();
-                    if(!settled.contains(adj)){
-                        calculatMinCost(adj,edgeweight,curr);
-                        unsettled.add(adj);
+        while (!q.isEmpty()){
+            Node node = (Node) q.poll();
+            q.remove(node);//visited
+            for (Integer i :node.getOutconnected()){
+                //if w(src)+w(edge(src,neighbor))< w(neighbor)
+                double weight=(node.getWeight()+dwgraph.getEdge(node.getKey(),i).getWeight());
+                if ( weight < dwgraph.getNode(i).getWeight()){
+                    if (i!=dest){
+                        q.add(dwgraph.getNode(i));
                     }
-                    
+                    dwgraph.getNode(i).setWeight(weight);
+                    ans.add(dwgraph.getNode(i)); //add to the list of shortestpath map
                 }
-                settled.add(curr);
-                ans.add(curr); //add to the list of shortestpath map
+
             }
+        }
         return ans;
     }
     @Override
@@ -354,40 +285,7 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
     }
     @Override
     public List<NodeData> tsp(List<NodeData> cities) {
-//        HashMap<Integer,NodeData> nodelist= new HashMap<>();
-//        HashMap<Integer,EdgeData> edgelist= new HashMap<>();
-//        for(NodeData node: cities){
-//            nodelist.put(node.getKey(), node);
-//            Node temp= (Node)node;
-//            for(int i:temp.getConnected()){
-//                if(cities.contains(dwgraph.getNode(i))){
-//                    if(temp.GetInEdge(i)!=null){
-//                        EdgeDataClass tempedge =(EdgeDataClass)temp.GetInEdge(i);
-//                        edgelist.put(temp.getKey(), tempedge);
-//                    }
-//                    if(temp.GetOutEdge(i)!=null){
-//                        EdgeDataClass tempedge =(EdgeDataClass)temp.GetOutEdge(i);
-//                        edgelist.put(temp.getKey(), tempedge);
-//                    }
-//                }
-//            }
-//        }
-//        DirectedWeightedGraphAlgorithmsClass newalgo= new DirectedWeightedGraphAlgorithmsClass(new DirectedWeightedGraphClass(nodelist,edgelist,0));
-//        if(!newalgo.isConnected()){
-//            return null;
-//        }
-        HashMap<Integer, HashMap<Integer, List<Node>>> shortestPathmap = new HashMap<>();
-        for(NodeData temp: cities){
-            Node node= (Node)temp;
-            for(int i=0; i< dwgraph.nodeSize();i++){
-                if(shortestPathmap.containsKey(temp.getKey())){
 
-                }
-                else {
-                    shortestPathmap.put(node.getKey(), new HashMap<>());
-                }
-            }
-        }
         //UNFINISHED
         return null;
     }
@@ -493,7 +391,7 @@ try {
                 throw new Exception(problemdescription);
             }
             else{
-                init(new DirectedWeightedGraphClass(nodelist,edgelist,0));
+                dwgraph = new DirectedWeightedGraphClass(nodelist,edgelist,0);
             }
         }
         catch (FileNotFoundException e){

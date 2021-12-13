@@ -1,6 +1,8 @@
 package ex2;
 import org.junit.jupiter.api.Test;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -45,12 +47,16 @@ public class AlgorithmsTests {
     }
     @Test
     void IsConnectedTest(){
+        //Connected graphs:
         dwgalgo.load("Test.json");
         assertTrue(dwgalgo.isConnected());
         dwgalgo.load("Test2.json");
         assertTrue(dwgalgo.isConnected());
         dwgalgo.load("resources/G3.json");
         assertTrue(dwgalgo.isConnected());
+        //Not a connected graph:
+        dwgalgo.load("Test1.json");
+        assertFalse(dwgalgo.isConnected());
     }
     @Test
     void Centretest(){
@@ -70,7 +76,7 @@ public class AlgorithmsTests {
         assertFalse(dwgalgo.load("resources/G5.json"));
     }
     @Test
-    void shortestpathtest(){
+    void shortestpathdisttest(){
         dwgalgo.load("Test.json");
         assertEquals(dwgalgo.shortestPathDist(0,1),1);
         assertEquals(dwgalgo.shortestPathDist(0,3),3);
@@ -85,5 +91,17 @@ public class AlgorithmsTests {
         assertEquals(dwgalgo.shortestPathDist(4,0),3);
         assertEquals(dwgalgo.shortestPathDist(4,1),4);
         assertEquals(dwgalgo.shortestPathDist(4,3),2);
+    }
+    @Test
+    void ShortestPathTest(){
+        dwgalgo.load("Test.json");
+        List<NodeData> expected= new LinkedList<>();
+        expected.add(dwgalgo.dwgraph.getNode(1));
+        expected.add(dwgalgo.dwgraph.getNode(2));
+        expected.add(dwgalgo.dwgraph.getNode(3));
+        List<NodeData> actual= dwgalgo.shortestPath(0,3);
+        for(int i=0;i<3;i++){
+            assertEquals(expected.get(i), actual.get(i));
+        }
     }
 }
