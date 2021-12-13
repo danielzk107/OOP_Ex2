@@ -6,6 +6,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import javax.swing.*;
+
 class ThreadforShortestPath extends Thread{
     private DirectedWeightedGraphAlgorithmsClass dwgalgo;
     private int start, end;
@@ -194,7 +196,6 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
     }
     public List<NodeData> Newhelper(int src, int dest, List<NodeData> list){
         list.add(dwgraph.getNode(src));
-        dwgraph.getNode(src).setTag(1);
         if(src==dest){
             return list;
         }
@@ -276,13 +277,100 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
 //                index=i;
 //            }
 //        }
-        double[][] distances= new double[cities.size()][cities.size()];//keeps the distance between every two nodes in cities
+        HashMap<Integer, HashMap<Integer, Double>> distances= new HashMap<>();//keeps the distance between every two nodes in cities
         for(int i=0; i< cities.size();i++){
+            distances.put(i, new HashMap<>());
             for(int j=0; j< cities.size();j++){
-                distances[i][j]= shortestPathDist(i,j);
+                distances.get(i).put(j,shortestPathDist(i,j));
             }
         }
-        return null;
+        NodeData first= cities.remove(0);
+        List<List<Integer>> paths= new LinkedList<>();
+        for(NodeData currnode:cities){
+            paths.add(GetBestPath(first.getKey(), currnode.getKey(), cities));
+        }
+        int bestindex=0, index=0;
+        double bestpath= Double.MAX_VALUE;
+        for(List<Integer> list:paths){
+            double sum=0;
+            if(list!=null && !list.isEmpty()){
+                for(int i=0;i< list.size()-1;i++){
+                    sum+=shortestPathDist(list.get(i), list.get(i+1));
+                }
+                if(sum<bestpath){
+                    bestpath= sum;
+                    bestindex=index;
+                }
+            }
+            index++;
+        }
+        List<NodeData> output= new LinkedList<>();
+        for(int i: paths.get(bestindex)){
+            output.add(dwgraph.getNode(i));
+        }
+        return output;
+    }
+    //Helper function for tsp
+    public List<Integer> GetBestPath(int target, int currnode,  List<NodeData> cities){
+        Node currentnode= (Node) dwgraph.getNode(currnode);
+        List<List<Integer>> paths= new LinkedList<>();
+        for(int i: currentnode.getInConnected()){
+            paths.add(GetBestPathHelper(target,i, new LinkedList<>()));
+        }
+        List<List<Integer>> actualpaths= new LinkedList<>();
+        for(List<Integer> list: paths){
+            HashMap<Integer, NodeData> temp= new HashMap<>();
+            for(NodeData n: cities){
+                if(n.getKey()!=currnode){
+                    temp.put(n.getKey(), n);
+                }
+            }
+            for(int i: list){
+                temp.remove(i);
+            }
+            if(temp.isEmpty()){
+                actualpaths.add(list);
+            }
+        }
+        int bestindex=0, index=0;
+        double bestpath= Double.MAX_VALUE;
+        for(List<Integer> list:actualpaths){
+            double sum=0;
+            for(int i=0;i< list.size()-1;i++){
+                sum+=shortestPathDist(list.get(i), list.get(i+1));
+            }
+            if(sum<bestpath){
+                bestpath= sum;
+                bestindex= actualpaths.indexOf(list);
+            }
+        }
+        if(actualpaths.isEmpty()){
+            return new LinkedList<>();
+        }
+        return actualpaths.get(bestindex);
+
+    }
+    public List<Integer> GetBestPathHelper(int target, int current, List<Integer> output){
+        output.add(current);
+        if(output.size()>= dwgraph.edgeSize()){
+            return output;
+        }
+        if(current==target){
+            return output;
+        }
+        Node currentnode= (Node) dwgraph.getNode(current);
+        List<List<Integer>> list= new LinkedList<>();
+        for(int i: currentnode.getInConnected()){
+            list.add(GetBestPathHelper(target, i, output));
+        }
+        int index=0, longestlistsize=0;
+        for(List<Integer> l:list){
+            if(l.size()>longestlistsize){
+                longestlistsize=l.size();
+                index=list.indexOf(l);
+            }
+        }
+        return list.get(index);
     }
   //helper function
      public JSONObject toJson(int src,double w, int dest){
