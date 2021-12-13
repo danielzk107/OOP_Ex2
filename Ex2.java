@@ -2,7 +2,7 @@ package ex2;
 
 public class Ex2 {
     public static void main(String[] args){
-        DirectedWeightedGraphAlgorithmsClass aaa= new DirectedWeightedGraphAlgorithmsClass((DirectedWeightedGraphClass) getGrapg("Test2.json"));
+        DirectedWeightedGraphAlgorithmsClass aaa= new DirectedWeightedGraphAlgorithmsClass((DirectedWeightedGraphClass) getGrapg(args[0]));
         DWGraphGUI x= new DWGraphGUI(aaa);
         x.FirstSetup();
     }
@@ -38,6 +38,5 @@ public class Ex2 {
         DirectedWeightedGraphAlgorithms alg = getGrapgAlgo(json_file);
         DWGraphGUI gui= new DWGraphGUI((DirectedWeightedGraphAlgorithmsClass) alg);
         gui.FirstSetup();
-
     }
 }

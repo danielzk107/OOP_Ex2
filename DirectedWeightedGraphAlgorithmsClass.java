@@ -229,8 +229,10 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
             while (unsettled.size()!=0) {
                 Node curr = getLow(unsettled);
                 unsettled.remove(curr);
+                curr.setTag(1);
                 for (Integer i : curr.getOutconnected()) {
                     Node adj = (Node) dwgraph.getNode(i);
+                    adj.setTag(1);
                     double edgeweight = dwgraph.getEdge(curr.getKey(), i).getWeight();
 
                     if (!settled.contains(adj)) {
@@ -291,9 +293,36 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
     }
     @Override
     public List<NodeData> tsp(List<NodeData> cities) {
-
-        //UNFINISHED
-        return null;
+        List<NodeData>[] pathsarr= new List[cities.size()];
+        int arrindex=0;
+        NodeData first= cities.get(0);
+        for(NodeData currnode: cities){
+            List<NodeData> path= new LinkedList<>();
+            path.add(first);
+            boolean passedall=true;
+            List<NodeData> shortestpath= shortestPath(first.getKey(), currnode.getKey());
+            if(shortestpath!=null && shortestpath.size()>= cities.size()){
+                for(NodeData x: cities){
+                    if(x.getTag()!=1){
+                        passedall=false;
+                    }
+                }
+                if(passedall){
+                    path.addAll(shortestpath);
+                    pathsarr[arrindex]= path;
+                    arrindex++;
+                }
+            }
+        }
+        int shortestpath=Integer.MAX_VALUE;
+        int index=0;
+        for(int i=0; i<arrindex;i++){
+            if(shortestpath>pathsarr[i].size()){
+                shortestpath=pathsarr[i].size();
+                index=i;
+            }
+        }
+        return pathsarr[index];
     }
   //helper function
      public JSONObject toJson(int src,double w, int dest){

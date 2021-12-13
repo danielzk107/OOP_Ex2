@@ -2,6 +2,7 @@ package ex2;
 
 import java.awt.*;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import javax.swing.*;
 class ThreadforPrint extends Thread{
@@ -193,8 +194,10 @@ public class DWGraphGUI extends JFrame {
     public void ShowGraphAction(Graphics g){
         g.clearRect(0,80,width,height);
         PrintGraph();
-        for(int i=0; i<dwgalgo.dwgraph.nodeSize();i++){
-            HighlightNode(i);
+        if(dwgalgo.dwgraph.nodeSize()<15){
+            for(int i=0; i<dwgalgo.dwgraph.nodeSize();i++){
+                HighlightNode(i);
+            }
         }
 //        btn.setEnabled(false);
     }
@@ -249,11 +252,17 @@ public class DWGraphGUI extends JFrame {
         DWGraphGUI x= new DWGraphGUI();
         AlgorithmsTests t= new AlgorithmsTests();
 //        x.dwgalgo.load("resources/G3.json");
-        x.dwgalgo.load("Test.json");
+        x.dwgalgo.load("resources/Test.json");
         x.FirstSetup();
-        System.out.println(x.dwgalgo.shortestPathDist(0,3));
-        List<NodeData> list= x.dwgalgo.shortestPath(0,3);
-        int c=0;
+        List<NodeData> list= new LinkedList<>();
+        list.add(x.dwgalgo.dwgraph.getNode(0));
+        list.add(x.dwgalgo.dwgraph.getNode(2));
+        list.add(x.dwgalgo.dwgraph.getNode(4));
+        list.add(x.dwgalgo.dwgraph.getNode(3));
+        List<NodeData> tsp= x.dwgalgo.tsp(list);
+        for (NodeData node:tsp){
+            System.out.println(node.getKey());
+        }
 //        if(x.dwgalgo.isConnected()){
 //            x.save("Test.json");
 //        }

@@ -48,21 +48,21 @@ public class AlgorithmsTests {
     @Test
     void IsConnectedTest(){
         //Connected graphs:
-        dwgalgo.load("Test.json");
+        dwgalgo.load("resources/Test.json");
         assertTrue(dwgalgo.isConnected());
-        dwgalgo.load("Test2.json");
+        dwgalgo.load("resources/Test2.json");
         assertTrue(dwgalgo.isConnected());
         dwgalgo.load("resources/G3.json");
         assertTrue(dwgalgo.isConnected());
         //Not a connected graph:
-        dwgalgo.load("Test1.json");
+        dwgalgo.load("resources/Test1.json");
         assertFalse(dwgalgo.isConnected());
     }
     @Test
     void Centretest(){
-        dwgalgo.load("Test.json");
+        dwgalgo.load("resources/Test.json");
         assertEquals(dwgalgo.center(), dwgalgo.dwgraph.getNode(0));
-        dwgalgo.load("Test2.json");
+        dwgalgo.load("resources/Test2.json");
         assertEquals(dwgalgo.center(), dwgalgo.dwgraph.getNode(2));
     }
     @Test
@@ -70,14 +70,14 @@ public class AlgorithmsTests {
         assertTrue(dwgalgo.load("resources/G1.json"));
         assertTrue(dwgalgo.load("resources/G2.json"));
         assertTrue(dwgalgo.load("resources/G3.json"));
-        assertTrue(dwgalgo.load("Test.json"));
-        assertTrue(dwgalgo.load("Test2.json"));
+        assertTrue(dwgalgo.load("resources/Test.json"));
+        assertTrue(dwgalgo.load("resources/Test2.json"));
         assertFalse(dwgalgo.load("resources/G4.json"));
         assertFalse(dwgalgo.load("resources/G5.json"));
     }
     @Test
     void shortestpathdisttest(){
-        dwgalgo.load("Test.json");
+        dwgalgo.load("resources/Test.json");
         assertEquals(dwgalgo.shortestPathDist(0,1),1);
         assertEquals(dwgalgo.shortestPathDist(0,3),3);
         assertEquals(dwgalgo.shortestPathDist(0,4),3);
@@ -94,14 +94,25 @@ public class AlgorithmsTests {
     }
     @Test
     void ShortestPathTest(){
-        dwgalgo.load("Test.json");
+        dwgalgo.load("resources/Test.json");
         List<NodeData> expected= new LinkedList<>();
+        expected.add(dwgalgo.dwgraph.getNode(0));
         expected.add(dwgalgo.dwgraph.getNode(1));
         expected.add(dwgalgo.dwgraph.getNode(2));
         expected.add(dwgalgo.dwgraph.getNode(3));
         List<NodeData> actual= dwgalgo.shortestPath(0,3);
-        for(int i=0;i<3;i++){
+        for(int i=0;i<4;i++){
             assertEquals(expected.get(i), actual.get(i));
+        }
+        expected= new LinkedList<>();
+        expected.add(dwgalgo.dwgraph.getNode(3));
+        expected.add(dwgalgo.dwgraph.getNode(0));
+        expected.add(dwgalgo.dwgraph.getNode(1));
+        expected.add(dwgalgo.dwgraph.getNode(2));
+        expected.add(dwgalgo.dwgraph.getNode(4));
+        actual= dwgalgo.shortestPath(3,4);
+        for(int i=0;i<5;i++){
+            assertEquals(expected.get(i).getKey(), actual.get(i).getKey());
         }
     }
 }
