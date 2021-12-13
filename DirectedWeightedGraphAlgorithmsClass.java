@@ -184,71 +184,8 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
 
         return shortestdistarr[src][dest];
     }
-    private Node getLow(HashSet<NodeData> unsettled) {
-        NodeData low=null;
-        double lowestWeight= Integer.MAX_VALUE;
-        for (NodeData n: unsettled) {
-            double nodeW= n.getWeight();
-            if (nodeW<lowestWeight){
-                lowestWeight= nodeW;
-                low= n;
-            }
-        }
-        return (Node) low;
-    }
-      private void calculatMinCost(Node adj, double edgeweight, Node curr) {
-        double srcW = curr.getWeight();
-        if (srcW + edgeweight < adj.getWeight()) {
-            adj.setWeight(srcW+edgeweight);
-            LinkedList<NodeData> shortestPath= new LinkedList<>(curr.getShortestPath());
-            shortestPath.add(curr);
-            adj.setShortestPath(shortestPath);
-        }
-    }
-    //helper function
-    private List<NodeData> helper(int src, int dest) {
-           List<NodeData> ans= new LinkedList<>();
-            //reset all the node weight to infinite
-            for (NodeData i:dwgraph.getNodelist().values()){
-                i.setWeight(Double.POSITIVE_INFINITY/2);//setting it to (max number)/2 so when we add it to itself it doesnt turn into a negative number
-            }
-            dwgraph.getNode(src).setWeight(0.0);
-
-            HashSet<NodeData> settled= new HashSet<>();
-            HashSet<NodeData> unsettled= new HashSet<>();
-
-            unsettled.add(dwgraph.getNode(src));
-            while (unsettled.size()!=0) {
-                Node curr = getLow(unsettled);
-                unsettled.remove(curr);
-                curr.setTag(1);
-                for (Integer i : curr.getOutconnected()) {
-                    Node adj = (Node) dwgraph.getNode(i);
-                    adj.setTag(1);
-                    double edgeweight = dwgraph.getEdge(curr.getKey(), i).getWeight();
-
-                    if (!settled.contains(adj)) {
-                        calculatMinCost(adj, edgeweight, curr);
-                        if (i != dest) {
-                            unsettled.add(adj);
-                        }else {
-                            ans.add(dwgraph.getNode(dest));
-                            return ans;
-                        }
-                    }
-                    settled.add(curr);
-                    ans.add(curr);
-                }
-            }
-        return ans;
-    }
     @Override
     public List<NodeData> shortestPath(int src, int dest) {
-        List<NodeData> ans;
-        ans=helper(src,dest);
-        return ans;
-    }
-    public List<NodeData> NewshortestPath(int src, int dest){
         List<NodeData> list= new LinkedList<>();
         if(shortestPathDist(src, dest)==Double.MAX_VALUE/2|| shortestPathDist(src, dest)==Double.MAX_VALUE){
             return null;
@@ -257,6 +194,7 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
     }
     public List<NodeData> Newhelper(int src, int dest, List<NodeData> list){
         list.add(dwgraph.getNode(src));
+        dwgraph.getNode(src).setTag(1);
         if(src==dest){
             return list;
         }
@@ -308,33 +246,43 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
     }
     @Override
     public List<NodeData> tsp(List<NodeData> cities) {
-        List<NodeData>[] pathsarr= new List[cities.size()];
-        int arrindex=0;
-        NodeData first= cities.remove(0);
-        for(NodeData currnode: cities){
-            boolean passedall=true;
-            List<NodeData> path= NewshortestPath(first.getKey(), currnode.getKey());
-            if(path!=null && path.size()>= cities.size()){
-                for(NodeData x: cities){
-                    if(x.getTag()!=1){
-                        passedall=false;
-                    }
-                }
-                if(passedall){
-                    pathsarr[arrindex]= path;
-                    arrindex++;
-                }
+//        List<NodeData>[] pathsarr= new List[cities.size()];
+//        int arrindex=0;
+//        NodeData first= cities.remove(0);
+//        for(NodeData currnode: cities){
+//            for(NodeData x:cities){
+//                x.setTag(0);
+//            }
+//            boolean passedall=true;
+//            List<NodeData> path= NewshortestPath(first.getKey(), currnode.getKey());
+//            if(path!=null && path.size()>= cities.size()){
+//                for(NodeData x: cities){
+//                    if(x.getTag()!=1){
+//                        passedall=false;
+//                        break;
+//                    }
+//                }
+//                if(passedall){
+//                    pathsarr[arrindex]= path;
+//                    arrindex++;
+//                }
+//            }
+//        }
+//        int shortestpath=Integer.MAX_VALUE;
+//        int index=0;
+//        for(int i=0; i<arrindex;i++){
+//            if(shortestpath>pathsarr[i].size()){
+//                shortestpath=pathsarr[i].size();
+//                index=i;
+//            }
+//        }
+        double[][] distances= new double[cities.size()][cities.size()];//keeps the distance between every two nodes in cities
+        for(int i=0; i< cities.size();i++){
+            for(int j=0; j< cities.size();j++){
+                distances[i][j]= shortestPathDist(i,j);
             }
         }
-        int shortestpath=Integer.MAX_VALUE;
-        int index=0;
-        for(int i=0; i<arrindex;i++){
-            if(shortestpath>pathsarr[i].size()){
-                shortestpath=pathsarr[i].size();
-                index=i;
-            }
-        }
-        return pathsarr[index];
+        return null;
     }
   //helper function
      public JSONObject toJson(int src,double w, int dest){

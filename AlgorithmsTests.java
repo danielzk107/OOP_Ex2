@@ -116,4 +116,25 @@ public class AlgorithmsTests {
             assertEquals(expected.get(i).getKey(), actual.get(i).getKey());
         }
     }
+    @Test
+    void tspTest(){
+        dwgalgo.load("resources/Test.json");
+        dwgalgo.init(dwgalgo.dwgraph);
+        List<NodeData> list= new LinkedList<>();
+        list.add(dwgalgo.dwgraph.getNode(0));
+        list.add(dwgalgo.dwgraph.getNode(2));
+        list.add(dwgalgo.dwgraph.getNode(4));
+        list.add(dwgalgo.dwgraph.getNode(3));
+        List<NodeData> expected= new LinkedList<>();
+        expected.add(dwgalgo.dwgraph.getNode(0));
+        expected.add(dwgalgo.dwgraph.getNode(1));
+        expected.add(dwgalgo.dwgraph.getNode(2));
+        expected.add(dwgalgo.dwgraph.getNode(4));
+        expected.add(dwgalgo.dwgraph.getNode(2));
+        expected.add(dwgalgo.dwgraph.getNode(3));
+        List<NodeData> actual= dwgalgo.tsp(list);
+        for(int i=0; i< actual.size();i++){
+            assertEquals(expected.get(i).getKey(), actual.get(i).getKey());
+        }
+    }
 }
