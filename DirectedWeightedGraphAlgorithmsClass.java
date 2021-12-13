@@ -37,7 +37,6 @@ class ThreadforShortestPath extends Thread{
     }
 }
 public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGraphAlgorithms {
-    List<Node>[] arr1, arr2;//arrays for the isConnected function
     public double[][] shortestdistarr;//matrix that keeps the shortest distance from every two nodes
     private boolean shortestdistrun;//keeps track of whether the shortestpathdist function has ran or not
     public DirectedWeightedGraphClass dwgraph;
@@ -49,12 +48,6 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         shortestdistrun=false;
         isconnected=false;
         isconnectedrun=false;
-        arr1= new LinkedList[g.nodeSize()];
-        arr2= new LinkedList[g.nodeSize()];
-        for(int i=0; i<g.nodeSize();i++){
-            arr1[i]= new LinkedList<>();
-            arr2[i]= new LinkedList<>();
-        }
     }
     public DirectedWeightedGraphAlgorithmsClass(){
         shortestdistrun=false;
@@ -203,7 +196,6 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         }
         return (Node) low;
     }
-    
       private void calculatMinCost(Node adj, double edgeweight, Node curr) {
         double srcW = curr.getWeight();
         if (srcW + edgeweight < adj.getWeight()) {
@@ -256,6 +248,29 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
         ans=helper(src,dest);
         return ans;
     }
+    public List<NodeData> NewshortestPath(int src, int dest){
+        List<NodeData> list= new LinkedList<>();
+        if(shortestPathDist(src, dest)==Double.MAX_VALUE/2|| shortestPathDist(src, dest)==Double.MAX_VALUE){
+            return null;
+        }
+        return Newhelper(src, dest, list);
+    }
+    public List<NodeData> Newhelper(int src, int dest, List<NodeData> list){
+        list.add(dwgraph.getNode(src));
+        if(src==dest){
+            return list;
+        }
+        Node srcnode= (Node) dwgraph.getNode(src);
+        double closest= Double.MAX_VALUE;
+        int closestindex= 0;
+        for(int i: srcnode.getOutconnected()){
+            if(shortestPathDist(i,dest)+shortestPathDist(src,i)<closest){
+                closest=shortestPathDist(i,dest)+shortestPathDist(src,i);
+                closestindex= i;
+            }
+        }
+        return Newhelper(closestindex,dest, list);
+    }
     @Override
     public NodeData center() {//The function calculates the distances from every node to every other node and returns the node which is closest to its furthest node (the node where the path from it to the node furthest away from it is the shortest).
         long starttime= System.currentTimeMillis();
@@ -295,20 +310,17 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
     public List<NodeData> tsp(List<NodeData> cities) {
         List<NodeData>[] pathsarr= new List[cities.size()];
         int arrindex=0;
-        NodeData first= cities.get(0);
+        NodeData first= cities.remove(0);
         for(NodeData currnode: cities){
-            List<NodeData> path= new LinkedList<>();
-            path.add(first);
             boolean passedall=true;
-            List<NodeData> shortestpath= shortestPath(first.getKey(), currnode.getKey());
-            if(shortestpath!=null && shortestpath.size()>= cities.size()){
+            List<NodeData> path= NewshortestPath(first.getKey(), currnode.getKey());
+            if(path!=null && path.size()>= cities.size()){
                 for(NodeData x: cities){
                     if(x.getTag()!=1){
                         passedall=false;
                     }
                 }
                 if(passedall){
-                    path.addAll(shortestpath);
                     pathsarr[arrindex]= path;
                     arrindex++;
                 }

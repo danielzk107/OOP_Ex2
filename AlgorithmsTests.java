@@ -95,6 +95,7 @@ public class AlgorithmsTests {
     @Test
     void ShortestPathTest(){
         dwgalgo.load("resources/Test.json");
+        dwgalgo.init(dwgalgo.dwgraph);
         List<NodeData> expected= new LinkedList<>();
         expected.add(dwgalgo.dwgraph.getNode(0));
         expected.add(dwgalgo.dwgraph.getNode(1));
@@ -110,7 +111,7 @@ public class AlgorithmsTests {
         expected.add(dwgalgo.dwgraph.getNode(1));
         expected.add(dwgalgo.dwgraph.getNode(2));
         expected.add(dwgalgo.dwgraph.getNode(4));
-        actual= dwgalgo.shortestPath(3,4);
+        actual= dwgalgo.NewshortestPath(3,4);
         for(int i=0;i<5;i++){
             assertEquals(expected.get(i).getKey(), actual.get(i).getKey());
         }
