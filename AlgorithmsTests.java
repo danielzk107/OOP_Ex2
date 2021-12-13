@@ -45,17 +45,45 @@ public class AlgorithmsTests {
     }
     @Test
     void IsConnectedTest(){
-        dwgalgo.init(DWGraphMaker(1000,2000));
-        DWGraphGUI gui= new DWGraphGUI(dwgalgo);
+        dwgalgo.load("Test.json");
+        assertTrue(dwgalgo.isConnected());
+        dwgalgo.load("Test2.json");
+        assertTrue(dwgalgo.isConnected());
+        dwgalgo.load("resources/G3.json");
         assertTrue(dwgalgo.isConnected());
     }
     @Test
+    void Centretest(){
+        dwgalgo.load("Test.json");
+        assertEquals(dwgalgo.center(), dwgalgo.dwgraph.getNode(0));
+        dwgalgo.load("Test2.json");
+        assertEquals(dwgalgo.center(), dwgalgo.dwgraph.getNode(2));
+    }
+    @Test
     void LoadTest(){
-        boolean actual= dwgalgo.load("resources/G1.json");
-        assertTrue(actual);
+        assertTrue(dwgalgo.load("resources/G1.json"));
+        assertTrue(dwgalgo.load("resources/G2.json"));
+        assertTrue(dwgalgo.load("resources/G3.json"));
+        assertTrue(dwgalgo.load("Test.json"));
+        assertTrue(dwgalgo.load("Test2.json"));
+        assertFalse(dwgalgo.load("resources/G4.json"));
+        assertFalse(dwgalgo.load("resources/G5.json"));
     }
     @Test
     void shortestpathtest(){
-        dwgalgo.load("resources/G1.json");
+        dwgalgo.load("Test.json");
+        assertEquals(dwgalgo.shortestPathDist(0,1),1);
+        assertEquals(dwgalgo.shortestPathDist(0,3),3);
+        assertEquals(dwgalgo.shortestPathDist(0,4),3);
+        assertEquals(dwgalgo.shortestPathDist(1,0),3);
+        assertEquals(dwgalgo.shortestPathDist(1,4),2);
+        assertEquals(dwgalgo.shortestPathDist(2,1),3);
+        assertEquals(dwgalgo.shortestPathDist(2,2),0);
+        assertEquals(dwgalgo.shortestPathDist(2,4),1);
+        assertEquals(dwgalgo.shortestPathDist(3,2),3);
+        assertEquals(dwgalgo.shortestPathDist(3,4),4);
+        assertEquals(dwgalgo.shortestPathDist(4,0),3);
+        assertEquals(dwgalgo.shortestPathDist(4,1),4);
+        assertEquals(dwgalgo.shortestPathDist(4,3),2);
     }
 }

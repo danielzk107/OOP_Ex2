@@ -27,22 +27,27 @@ public class DWGraphGUI extends JFrame {
     public DirectedWeightedGraphAlgorithmsClass dwgalgo;
     private DirectedWeightedGraphAlgorithmsClass originalgraph;
     private JPanel panel;
-    private JButton btn, centrebtn;
+    private JButton btn, centrebtn, clearbtn;
     private int width,height;
     private double xdiff,ydiff;
     public DWGraphGUI(DirectedWeightedGraphAlgorithmsClass dwgalgo) {
         this.dwgalgo = dwgalgo;
         originalgraph= dwgalgo;
         panel= new JPanel();
+        clearbtn= new JButton("Clear board");
+        clearbtn.addActionListener(e -> ClearAction(getGraphics()));
         centrebtn= new JButton("Show centre node of the graph");
         centrebtn.addActionListener(e -> CentreAction(getGraphics()));
-        btn= new JButton("Show Graph");
+        btn= new JButton("Show My Graph");
         btn.addActionListener(e -> ShowGraphAction(getGraphics()));
         panel.add(centrebtn);
         panel.add(btn);
-        this.setSize(750,500);
+        panel.add(clearbtn);
         panel.setBounds(0,0,750,500);
-        panel.setBackground(Color.black);
+        panel.setBackground(Color.LIGHT_GRAY);
+        this.setSize(750,500);
+        this.setLayout(null);
+        this.getContentPane().setBackground(Color.white);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
         this.add(panel);
@@ -54,19 +59,25 @@ public class DWGraphGUI extends JFrame {
         panel= new JPanel();
         panel.setBackground(Color.LIGHT_GRAY);
         panel.setBounds(0,0, width, 50);
-        this.setTitle("Frame");
-        centrebtn= new JButton("Show centre of graph");
+        this.setTitle("Graphic graph grasper");
+        clearbtn= new JButton("Clear board");
+        clearbtn.addActionListener(e -> ClearAction(getGraphics()));
+        centrebtn= new JButton("Show centre node of the graph");
         centrebtn.addActionListener(e -> CentreAction(getGraphics()));
-        btn= new JButton("Show Random Graph");
+        btn= new JButton("Show My Graph");
         btn.addActionListener(e -> ShowGraphAction(getGraphics()));
         panel.add(centrebtn);
         panel.add(btn);
+        panel.add(clearbtn);
         this.setSize(750,500);
         this.setLayout(null);
         this.getContentPane().setBackground(Color.white);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
         this.add(panel);
+    }
+    public void ClearAction(Graphics g){
+        g.clearRect(0,80,width,height);
     }
     public void ChangeSize(int width, int height){
         this.setSize(width,height);
@@ -88,18 +99,29 @@ public class DWGraphGUI extends JFrame {
     public void PrintGraph(){
         Graphics g= getGraphics();
         DirectedWeightedGraphClass graph=(DirectedWeightedGraphClass)dwgalgo.getGraph();
-        ThreadforPrint t1= new ThreadforPrint(this, 0, (int)Math.ceil(graph.edgeSize()/4.0));
-        ThreadforPrint t2= new ThreadforPrint(this, (int)Math.ceil(graph.edgeSize()/4.0), (int)Math.ceil(graph.edgeSize()/2.0));
-        ThreadforPrint t3= new ThreadforPrint(this, (int)Math.ceil(graph.edgeSize()/2.0), (int)Math.ceil(graph.edgeSize()*3/4.0));
-        t1.start();
-        t2.start();
-        t3.start();
-        for (int i=(int)Math.ceil(graph.edgeSize()*3/4.0);i<graph.edgeSize();i++){
-            EdgeDataClass temp= (EdgeDataClass)graph.getEdgelist().get(i);
-            g.setColor(Color.GREEN);
-            GeoLocationClass location1= (GeoLocationClass) graph.getNode(temp.getSrc()).getLocation();
-            GeoLocationClass location2= (GeoLocationClass) graph.getNode(temp.getDest()).getLocation();
-            g.drawLine((int)location1.x(), (int)location1.y()+80, (int)location2.x(), (int)location2.y()+80);
+        if(graph.edgeSize()>300){
+            ThreadforPrint t1= new ThreadforPrint(this, 0, (int)Math.ceil(graph.edgeSize()/4.0));
+            ThreadforPrint t2= new ThreadforPrint(this, (int)Math.ceil(graph.edgeSize()/4.0), (int)Math.ceil(graph.edgeSize()/2.0));
+            ThreadforPrint t3= new ThreadforPrint(this, (int)Math.ceil(graph.edgeSize()/2.0), (int)Math.ceil(graph.edgeSize()*3/4.0));
+            t1.start();
+            t2.start();
+            t3.start();
+            for (int i=(int)Math.ceil(graph.edgeSize()*3/4.0);i<graph.edgeSize();i++){
+                EdgeDataClass temp= (EdgeDataClass)graph.getEdgelist().get(i);
+                g.setColor(Color.GREEN);
+                GeoLocationClass location1= (GeoLocationClass) graph.getNode(temp.getSrc()).getLocation();
+                GeoLocationClass location2= (GeoLocationClass) graph.getNode(temp.getDest()).getLocation();
+                g.drawLine((int)location1.x(), (int)location1.y()+80, (int)location2.x(), (int)location2.y()+80);
+            }
+        }
+        else{
+            for (int i=0;i<graph.edgeSize();i++){
+                EdgeDataClass temp= (EdgeDataClass)graph.getEdgelist().get(i);
+                g.setColor(Color.GREEN);
+                GeoLocationClass location1= (GeoLocationClass) graph.getNode(temp.getSrc()).getLocation();
+                GeoLocationClass location2= (GeoLocationClass) graph.getNode(temp.getDest()).getLocation();
+                g.drawLine((int)location1.x(), (int)location1.y()+80, (int)location2.x(), (int)location2.y()+80);
+            }
         }
         for (int i=0; i< graph.nodeSize();i++){
             Node temp= (Node)graph.getNode(i);
@@ -191,15 +213,10 @@ public class DWGraphGUI extends JFrame {
     public void save(String filename){
         originalgraph.save(filename);
     }
-    public static void main(String[]args){//Main function to Test the capabilities of Java Swing.
-        DWGraphGUI x= new DWGraphGUI();
-        AlgorithmsTests t= new AlgorithmsTests();
-//        x.dwgalgo.load("resources/G1.json");
-        x.dwgalgo.load("Test.json");
-        x.firstinit(x.dwgalgo.getGraph());
-//        x.firstinit(t.DWGraphMaker(1000,10000));
-        double[] arr= XdiffandYdiff((DirectedWeightedGraphClass)x.dwgalgo.getGraph());
-        x.Setxandydiff(arr);
+    public void FirstSetup(){
+        firstinit(dwgalgo.getGraph());
+        double[] arr= XdiffandYdiff((DirectedWeightedGraphClass)dwgalgo.getGraph());
+        Setxandydiff(arr);
         while(arr[0]<100){//finding the correct measurements required for the frame.
             arr[0]*=10;
         }
@@ -215,8 +232,15 @@ public class DWGraphGUI extends JFrame {
         else if(arr[1]>600){
             arr[1]=600;
         }
-        x.ChangeSize((int)Math.round(arr[0]), (int)Math.round(arr[1]+80));
-        x.CorrectGraph();
+        ChangeSize((int)Math.round(arr[0]), (int)Math.round(arr[1]+80));
+        CorrectGraph();
+    }
+    public static void main(String[]args){//Main function to Test the capabilities of Java Swing.
+        DWGraphGUI x= new DWGraphGUI();
+        AlgorithmsTests t= new AlgorithmsTests();
+        x.dwgalgo.load("resources/G3.json");
+//        x.dwgalgo.load("Test2.json");
+        x.FirstSetup();
 //        if(x.dwgalgo.isConnected()){
 //            x.save("Test.json");
 //        }

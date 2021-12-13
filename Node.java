@@ -41,9 +41,22 @@ public class Node implements NodeData {
     }
     public EdgeData RemoveOutEdge(int dest){
         if(!inedgelist.containsKey(dest)){
-            allconnected.remove(dest);
+            for(int i=0;i< allconnected.size();i++){
+                if(allconnected.get(i)==dest){
+                    allconnected.remove(i);
+                    break;
+                }
+            }
         }
-        outconnected.remove(dest);
+        if(!outedgelist.containsKey(dest)){
+            return null;
+        }
+        for(int i=0;i< outconnected.size();i++){
+            if(outconnected.get(i)==dest){
+                outconnected.remove(i);
+                break;
+            }
+        }
         return outedgelist.remove(dest);
     }
     public EdgeData RemoveInEdge(int src){
