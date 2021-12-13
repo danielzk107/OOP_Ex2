@@ -215,31 +215,37 @@ public class DirectedWeightedGraphAlgorithmsClass implements DirectedWeightedGra
     }
     //helper function
     private List<NodeData> helper(int src, int dest) {
-        List<NodeData> ans= new LinkedList<>();
-        for (NodeData i:dwgraph.getNodelist().values()){
-            i.setWeight(Double.POSITIVE_INFINITY);
-        }
-
-        Queue<NodeData> q = new LinkedList<>();
-        q.add(dwgraph.getNode(src));//add src in the queue
-        dwgraph.getNode(src).setWeight(0.0);
-
-        while (!q.isEmpty()){
-            Node node = (Node) q.poll();
-            q.remove(node);//visited
-            for (Integer i :node.getOutconnected()){
-                //if w(src)+w(edge(src,neighbor))< w(neighbor)
-                double weight=(node.getWeight()+dwgraph.getEdge(node.getKey(),i).getWeight());
-                if ( weight < dwgraph.getNode(i).getWeight()){
-                    if (i!=dest){
-                        q.add(dwgraph.getNode(i));
-                    }
-                    dwgraph.getNode(i).setWeight(weight);
-                    ans.add(dwgraph.getNode(i)); //add to the list of shortestpath map
-                }
-
+           List<NodeData> ans= new LinkedList<>();
+            //reset all the node weight to infinite
+            for (NodeData i:dwgraph.getNodelist().values()){
+                i.setWeight(Double.POSITIVE_INFINITY/2);//setting it to (max number)/2 so when we add it to itself it doesnt turn into a negative number
             }
-        }
+            dwgraph.getNode(src).setWeight(0.0);
+
+            HashSet<NodeData> settled= new HashSet<>();
+            HashSet<NodeData> unsettled= new HashSet<>();
+
+            unsettled.add(dwgraph.getNode(src));
+            while (unsettled.size()!=0) {
+                Node curr = getLow(unsettled);
+                unsettled.remove(curr);
+                for (Integer i : curr.getOutconnected()) {
+                    Node adj = (Node) dwgraph.getNode(i);
+                    double edgeweight = dwgraph.getEdge(curr.getKey(), i).getWeight();
+
+                    if (!settled.contains(adj)) {
+                        calculatMinCost(adj, edgeweight, curr);
+                        if (i != dest) {
+                            unsettled.add(adj);
+                        }else {
+                            ans.add(dwgraph.getNode(dest));
+                            return ans;
+                        }
+                    }
+                    settled.add(curr);
+                    ans.add(curr);
+                }
+            }
         return ans;
     }
     @Override
