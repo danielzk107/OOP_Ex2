@@ -17,3 +17,4 @@ The creation of an iterator for a specific node, the removal of a node from the 
 
 ### DirectedWeightedGraphAlgorithms
 
+This class was the main objective of this project, with its different difficult functions. For the implementation of the functions, we tries to use the dynamic programming approach, so the class has some private variables, including arrays and lists.  
