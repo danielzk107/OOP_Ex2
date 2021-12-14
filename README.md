@@ -1,6 +1,6 @@
 # OOP_Ex2
 This project is the third assignment in the course "Object Oriented Programming", in which we implement an api of directed weighted graphes and various related algorithms.
-In this README file, we will provide a short explanation for each of the objects and show how we implemented their interfaces, as well as give instructions as to how one can download and run the program. to skip to the explanation of how to install and run the program, press here
+In this README file, we will provide a short explanation for each of the objects and show how we implemented their interfaces, as well as give instructions as to how one can download and run the program. to skip to the explanation of how to install and run the program, press [here](https://github.com/danielzk107/OOP_Ex2/blob/main/README.md#how-to-install-and-run)
 
 ## Implementaion
 
@@ -35,5 +35,5 @@ In the future, we will ponder this dilema of effiecency vs capacity in more dept
 
 ## How to install and run
 
-In order to install the executable jar file and example test json files, simply go to the release (v1.1) and download the files straight from there by simply pressing the names of the files. In order to install the entire project, go to the main branch and press the green button that says "code". from there, a small interactive window will open. from inside that window, choose the "Download as zip" option, and after the .zip file is downloaded to your machine, unzip it. In order to fork the project, follow https://docs.github.com/en/get-started/quickstart/fork-a-repo.
+In order to install the executable jar file and example test json files, simply go to the release (v1.1) and download the files straight from there by simply pressing the names of the files. In order to install the entire project, go to the main branch and press the green button that says "code". from there, a small interactive window will open. from inside that window, choose the "Download as zip" option, and after the .zip file is downloaded to your machine, unzip it. In order to fork the project, follow [this tutorial](https://docs.github.com/en/get-started/quickstart/fork-a-repo).
 
