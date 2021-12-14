@@ -6,8 +6,7 @@ In this README file, we will provide a short explanation for each of the objects
 
 The most important thing in projects like this one that run exhaustive functions is the implementation of the data structures; If you dont use optimal means to store the required data, your functions would never finish, and the entire project would go to waste. With that in mind, we used what we consider to be the most optimal implementation of all the data structures: 
 
-### NodeData<img width="552" alt="146079153-33ab34c4-fba0-4e18-8adf-63fdc1a8146e" src="https://user-images.githubusercontent.com/92798950/146079424-d324a95f-1aec-4995-b09d-f790da84d7ad.png">
-
+### NodeData
 
 The NodeData implementation might be considered a bit messy, simply because of the relatively large amount of veriables in the class. the NodeData class uses numerous hashmaps and lists to keep track of all of its connections to other nodes and edges in the most convenient way possible, so when we want to traverse our graph or just a part of it, we won't need to spend much effort. 
 
