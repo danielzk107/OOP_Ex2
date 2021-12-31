@@ -32,7 +32,7 @@ The tests we have created for this project are relatively simple; we load graphs
 
 ## Performance
 
-In terms of speed and effiecency, we consider our project to be mostly optimal, since it uses dynamic programming almost exclusively. However, that comes at the cost of space effiecency and capability: when ran using a random graph of size 1000 with an average of 20 edges per node, the program found the centre of the graph in less than 100 milliseconds; when ran using a graph ten times larger, the program found the centre of the graph in less than 5 seconds; But when ran using a graph of size 100000 or larger, the program threw a heap error for a lack of memmory.
+In terms of speed and effiecency, we consider our project to be mostly optimal, since it uses dynamic programming almost exclusively. However, that comes at the cost of space effiecency and capability: when ran using a random graph of size 1000 with an average of 20 edges per node, the program found the centre of the graph in less than 100 milliseconds; when ran using a graph ten times larger, the program found the centre of the graph in less than 5 seconds; But when ran using a graph of size 100000 or larger, the program threw a heap error for a lack of memory.
 In the future, we will ponder this dilema of effiecency vs capacity in more depth, in order to have a truly optimal system.
 
 ## How to install and run
